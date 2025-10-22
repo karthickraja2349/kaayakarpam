@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Add Hospital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+    crossorigin=""/>
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #3498db;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: #7f8c8d;
+    }
+
+    .content {
+      display: flex;
+      width: 100%;
+      gap: 30px;
+    }
+
+    .add-hospital {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 100%;
+      flex: 1;
+    }
+
+    .form-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .add-hospital form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: green;
+    }
+
+    .add-hospital input {
+      padding: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .add-hospital input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .add-hospital button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 16px;
+      margin-top: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .add-hospital button:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .add-hospital button:active {
+      transform: translateY(0);
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 14px;
+      margin: 5px 0;
+      min-height: 20px;
+      font-weight: 500;
+    }
+
+    .info-panel {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 100%;
+      flex: 1;
+    }
+
+    .info-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .info-content {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 5px solid #3498db;
+      border-bottom: 5px solid #3498db;
+    }
+
+    .info-content h3 {
+      color: #3498db;
+      margin-top: 0;
+    }
+
+    .info-content ul {
+      padding-left: 20px;
+    }
+
+    .info-content li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .failure {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Map container styling */
+    #map-container {
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    #map {
+      height: 300px;
+      width: 100%;
+    }
+    
+    .map-instructions {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      border-radius: 0 0 8px 8px;
+    }
+    
+    .coordinates-display {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .coordinates-display .input-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        flex-direction: column;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .coordinates-display {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+    /* Sidebar Navigation */
+nav {
+  width: 240px;
+  background-color: #2c3e50;
+  padding: 20px 10px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+}
+
+nav h2 {
+  color: #ecf0f1;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  color: #ecf0f1;
+  text-decoration: none;
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  transition: 0.3s;
+  font-size: 15px;
+}
+
+nav a i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+nav a:hover {
+  background-color: #1abc9c;
+  color: #fff;
+}
+
+/* Adjust body to account for sidebar */
+body {
+  margin-left: 240px; /* Same as nav width */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Adjust container to account for sidebar */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: calc(1200px - 240px);
+}
+  </style>
+</head>
+
+<body>
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+     <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <a href="../jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+   <!-- <a href="../html/addHospital.html"><i class="fa-solid fa-hospital"></i> Add Hospital</a> -->
+ <!--   <a href="../html/hospitalDelete.html"><i class="fa-solid fa-trash"></i> Delete Hospital</a> -->
+   <!--  <a href="../html/updateHospital.html"><i class="fa-solid fa-pen-to-square"></i> Update Hospital</a>-->
+    <a href="../html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i> Manage Hospitals</a>
+  <!--  <a href="../html/addScanCentres.html"><i class="fa-solid fa-microscope"></i> Add Scan Centres</a> -->
+    <a href="../html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+<!--    <a href="../html/addAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Add Ambulance</a> -->
+    <a href="../html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a> 
+  <!--   <a href="../../common/web/html/searchHospital.html"><i class="fa-solid fa-magnifying-glass"></i> Search Hospital</a> -->
+   <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+ <!--   <a href="../../common/web/html/editProfile.html"><i class="fa-solid fa-user-pen"></i> Edit Profile</a> -->
+  </nav>
+  <div class="container">
+    <div class="header">
+      <h1>Kaayakarpam Hospital Registration</h1>
+      <p>Register a new hospital to the healthcare network</p>
+    </div>
+    
+    <div class="content">
+      <div class="add-hospital">
+        <h2 class="form-title">Hospital Details</h2>
+        <form id="addHospital" method="POST">
+          <div class="input-group">
+            <label for="hospitalName">Hospital Name</label>
+            <input type="text" id="hospitalName" name="hospitalName" placeholder="Enter the name of the Hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="hospitalAddress">Hospital Address</label>
+            <input type="text" id="hospitalAddress" name="hospitalAddress" placeholder="Enter the address of the Hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="hospitalLocation">Hospital Location</label>
+            <input type="text" id="hospitalLocation" name="hospitalLocation" placeholder="Enter the location of the Hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="ceoName">CEO Name</label>
+            <input type="text" id="ceoName" name="ceoName" placeholder="Enter the CEO Name of the Hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Enter the PhoneNumber of the Hospital" required>
+          </div>
+          
+          <!-- Map Container -->
+          <div class="input-group">
+            <label>Select Hospital Location on Map</label>
+            <div id="map-container">
+              <div id="map"></div>
+              <div class="map-instructions">
+                Click on the map to set the hospital location
+              </div>
+            </div>
+          </div>
+          
+          <!-- Coordinates Display -->
+          <div class="coordinates-display">
+            <div class="input-group">
+              <label for="latitude">Latitude</label>
+              <input type="text" id="latitude" name="latitude" readonly placeholder="Click on the map">
+            </div>
+            
+            <div class="input-group">
+              <label for="longitude">Longitude</label>
+              <input type="text" id="longitude" name="longitude" readonly placeholder="Click on the map">
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label for="generalBeds">General Beds</label>
+            <input type="number" id="generalBeds" name="generalBeds" placeholder="Enter the total general beds in the hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="icuBeds">ICU Beds</label>
+            <input type="number" id="icuBeds" name="icuBeds" placeholder="Enter the total ICU beds in the hospital" required>
+          </div>
+          
+          <div class="input-group">
+            <label for="labCount">Lab Count</label>
+            <input type="number" id="labCount" name="labCount" placeholder="Enter the lab Counts in the hospital" required>
+          </div>
+          
+           <div class="input-group">
+             <label for="ambulanceCount">Ambulance Count</label>
+             <input type="number" id="ambulanceCount" name="ambulanceCount" placeholder="Enter the Ambulance Count in the hospital" required>
+          </div>
+          
+          <p class="error" id="error-msg"></p>
+
+          <button type="submit">Register Hospital</button>
+        </form>
+      </div>
+      
+      <div class="info-panel">
+        <h2 class="info-title">Registration Guidelines</h2>
+        <div class="info-content">
+          <h3>Please ensure the following:</h3>
+          <ul>
+            <li>Hospital name should be at least 3 characters long</li>
+            <li>Address should be at least 8 characters long</li>
+            <li>CEO name should contain only alphabets and spaces</li>
+            <li>Phone number must be exactly 10 digits</li>
+            <li>All fields are mandatory for registration</li>
+            <li>Ensure the information provided is accurate and up-to-date</li>
+            <li>Click on the map to set the precise location of your hospital</li>
+          </ul>
+          <p>After submission, our team will verify the details and activate the hospital in our network within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div id="output"></div>
+  </div>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+    crossorigin=""></script>
+  
+  <script>
+    // Initialize the map
+    const map = L.map('map').setView([9.9252, 78.1198],  8); // Default to madurai
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Add a marker that can be dragged
+    let marker = L.marker([8.0883, 77.5385], {
+      draggable: true
+    }).addTo(map);
+    
+    // Update coordinates when marker is dragged or map is clicked
+    function updateCoordinates(lat, lng) {
+      document.getElementById('latitude').value = lat.toFixed(6);
+      document.getElementById('longitude').value = lng.toFixed(6);
+    }
+    
+    // Event when marker is dragged
+    marker.on('dragend', function(event) {
+      const position = marker.getLatLng();
+      updateCoordinates(position.lat, position.lng);
+    });
+    
+    // Event when map is clicked
+    map.on('click', function(event) {
+      const {lat, lng} = event.latlng;
+      marker.setLatLng([lat, lng]);
+      updateCoordinates(lat, lng);
+    });
+    
+    // Form submission handler
+    document.getElementById("addHospital").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const errorMsg = document.getElementById("error-msg");
+      const output = document.getElementById("output");
+      errorMsg.textContent = "";
+      output.textContent = "";
+      output.className = "";
+      
+      const hospitalName = document.getElementById("hospitalName").value.trim();
+      const hospitalAddress = document.getElementById("hospitalAddress").value.trim();
+      const hospitalLocation = document.getElementById("hospitalLocation").value.trim();
+      const hospitalCeoName = document.getElementById("ceoName").value.trim();
+      const hospitalPhoneNumber = document.getElementById("phoneNumber").value.trim();  
+      const latitude = document.getElementById("latitude").value.trim();
+      const longitude = document.getElementById("longitude").value.trim();
+      
+      const hospitalTotalGeneralBeds = document.getElementById("generalBeds").value.trim();
+      const hospitalTotalIcuBeds = document.getElementById("icuBeds").value.trim();
+      const hospitalLabCount = document.getElementById("labCount").value.trim();
+      const hospitalAmbulanceCount = document.getElementById("ambulanceCount").value.trim();
+      
+      // Validation
+      if(hospitalName.length < 3){
+        errorMsg.textContent = "Name must be at least 3 characters long";
+        return;
+      }
+      
+      const namePattern = /^[A-Za-z\s]+$/;
+      if (!namePattern.test(hospitalName)) {
+        errorMsg.textContent = "Hospital name must contain only alphabets and spaces";
+        return;
+      } 
+      
+      if(hospitalAddress.length < 8){
+        errorMsg.textContent = "Address must be at least 8 characters long. So please enter a Valid Address";
+        return;
+      }
+      
+      if(!namePattern.test(hospitalCeoName)){
+        errorMsg.textContent = "CEO name must contain only alphabets and spaces";
+        return;
+      }
+      
+      const numberPattern = /^\d{10}$/;
+      if (!numberPattern.test(hospitalPhoneNumber)) {
+        errorMsg.textContent = "Mobile number must be exactly 10 digits";
+        return;
+      }
+      
+      // Validate coordinates
+      if (!latitude || !longitude) {
+        errorMsg.textContent = "Please select a location on the map";
+        return;
+      }
+      
+      
+      
+      // Create form data with all fields
+      const formData = new FormData();
+      formData.append("hospitalName", hospitalName);
+      formData.append("hospitalAddress", hospitalAddress);
+      formData.append("hospitalLocation", hospitalLocation);
+      formData.append("ceoName", hospitalCeoName);
+      formData.append("phoneNumber", hospitalPhoneNumber);
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+      formData.append("generalBeds", hospitalTotalGeneralBeds);
+      formData.append("icuBeds", hospitalTotalIcuBeds);
+      formData.append("labCount", hospitalLabCount);
+      formData.append("ambulanceCount", hospitalAmbulanceCount);
+      
+      try {
+        
+        const response = await fetch("/kaayakarpam/addHospital", {
+          method: "POST",
+          body: formData
+        });
+       const result = await response.json();
+        if (response.ok) {
+          output.textContent = result.message || "Hospital added Successfully";
+          output.className = "success";
+          document.getElementById("addHospital").reset();
+          
+          // Reset map position but keep coordinates
+          document.getElementById("latitude").value = "";
+          document.getElementById("longitude").value = "";
+          marker.setLatLng([8.0883, 77.5385]);
+          map.setView([8.0883, 77.5385], 13);
+        }
+        else {
+           if (result.message && result.message.includes("Phone number already registered")) {
+               output.textContent = "❌ Phone number already registered with another hospital. Please use a different number.";
+           } 
+           else if (result.message && result.message.includes("Duplicate entry")) {
+             output.textContent = "❌ Hospital already exists with this mobile number. Please verify the provided number.";
+          } 
+          else {
+            output.textContent = result.message || "Registration failed. Please try again.";
+          }
+          output.className = "failure";
+       }
+      } 
+      catch (err) {
+        errorMsg.textContent = "Error: " + err.message;
+        output.textContent = "Registration failed. Please try again.";
+        output.className = "failure";
+      }
+       setTimeout(() => {
+                 window.location.reload();
+            }, 5000);
+    });
+  </script>
+</body>
+</html>

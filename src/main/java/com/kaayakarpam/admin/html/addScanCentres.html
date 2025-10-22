@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Staff Dashboard</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: background 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+    
+       header {
+      background: #0077cc;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin-bottom: 20px
+    }
+
+    /* Main content */
+    .content {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #2c3e50;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: green;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background: #1abc9c;
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #16a085;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+   
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+     <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <a href="../jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+   <!-- <a href="../html/addHospital.html"><i class="fa-solid fa-hospital"></i> Add Hospital</a>
+    <a href="../html/hospitalDelete.html"><i class="fa-solid fa-trash"></i> Delete Hospital</a> -->
+    <a href="../html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i>  Manage Hospitals</a>
+  <!--  <a href="../html/addScanCentres.html"><i class="fa-solid fa-microscope"></i> Add Scan Centres</a> -->
+    <a href="../html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+  <!--  <a href="../html/addAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Add Ambulance</a> -->
+    <a href="../html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a> 
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+  </nav>
+
+  <!-- Main content -->
+ 
+  <div class="content">
+   <header> 🔬Add Scan Centre</header>
+    <div class="card">
+      <h3>Add Scan Centre</h3>
+      
+      <form id="scan-centre-form">
+        <label for="hospitalId">Hospital ID</label>
+        <input type="number" id="hospitalId" name="hospitalId" placeholder="Enter the Hospital ID" required>
+        
+        <label for="scanTypeId">Select Scan Type</label>
+        <select id="scanTypeId" name="scanTypeId" required>
+          <option value="">Loading scan types...</option>
+        </select>
+
+        <button type="submit">Add Scan Centre</button>
+      </form>
+
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <script>
+    // Load scan types from backend
+    async function loadScanTypes() {
+      const select = document.getElementById("scanTypeId");
+      try {
+        const res = await fetch("/kaayakarpam/scantypes");
+        const data = await res.json();
+        select.innerHTML = ""; // clear existing
+        data.forEach(scan => {
+          const opt = document.createElement("option");
+          opt.value = scan.scanTypeId;
+          opt.textContent = `${scan.scanTypeId} - ${scan.scanTypeName}`;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        select.innerHTML = "<option>Error loading types</option>";
+      }
+    }
+
+    // Handle form submit
+    document.getElementById("scan-centre-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const hospitalId = document.getElementById("hospitalId").value;
+      const scanTypeId = document.getElementById("scanTypeId").value;
+      const messageBox = document.getElementById("message");
+
+      try {
+        const res = await fetch("/kaayakarpam/scanCentreAdd", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ hospitalId, scanTypeId })
+        });
+
+        const result = await res.json();
+      
+        if (result.status === "success") {
+          messageBox.textContent = result.message || "Scan Centre added!";
+          messageBox.className = "message success";
+        } 
+        else if(result.error){
+            if(result.error.includes("a foreign key constraint fails")){
+                   messageBox.textContent = "❌ There is No Hospital Present in this provided Hospital Id.";
+                   messageBox.className = "message error";
+             }      
+        }
+        else {
+          messageBox.textContent = result.message || "Failed to add scan centre.";
+          messageBox.className = "message error";
+        }
+      } catch (err) {
+        messageBox.textContent = "Error: " + err.message;
+        messageBox.className = "message error";
+      }
+      
+       setTimeout(() => {
+                 window.location.reload();
+            }, 5000);
+    });
+
+    // Initialize
+    loadScanTypes();
+  </script>
+</body>
+</html>
+

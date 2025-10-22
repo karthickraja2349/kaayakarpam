@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance & Duration Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 18px;
+        }
+        
+        .content {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .result-container {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin: 15px 0 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .input-row .form-group {
+            flex: 1;
+        }
+        
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #3498db;
+        }
+        
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .distance-result, .duration-result {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .method-info {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .transport-options {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .transport-btn {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .transport-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .transport-btn:hover {
+            background: #bdc3c7;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>        
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-location-arrow"></i> Distance & Duration Calculator</h1>
+            <p>Calculate approximate travel time between two locations</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-container">
+                <h2><i class="fas fa-calculator"></i> Enter Coordinates</h2>
+                
+                <div class="form-group">
+                    <h3>Starting Point</h3>
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="startLat">Latitude</label>
+                            <input type="text" id="startLat" placeholder="e.g., 9.9252" value="9.9252">
+                        </div>
+                        <div class="form-group">
+                            <label for="startLng">Longitude</label>
+                            <input type="text" id="startLng" placeholder="e.g., 78.1198" value="78.1198">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <h3>Destination</h3>
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="destLat">Latitude</label>
+                            <input type="text" id="destLat" placeholder="e.g., 13.0827" value="13.0827">
+                        </div>
+                        <div class="form-group">
+                            <label for="destLng">Longitude</label>
+                            <input type="text" id="destLng" placeholder="e.g., 80.2707" value="80.2707">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <h3>Transportation Method</h3>
+                    <div class="transport-options">
+                        <button class="transport-btn active" data-speed="80">Car</button>
+                        <button class="transport-btn" data-speed="30">Ambulance</button>
+                        <button class="transport-btn" data-speed="20">City Driving</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customSpeed">Or enter custom speed (km/h)</label>
+                    <input type="number" id="customSpeed" placeholder="Enter km/h">
+                </div>
+                
+                <button id="calculateBtn"><i class="fas fa-bolt"></i> Calculate Distance & Duration</button>
+                
+                <div class="method-info">
+                    <h3><i class="fas fa-info-circle"></i> How It Works</h3>
+                    <p>This calculator uses the <strong>Haversine formula</strong> to calculate the great-circle distance between two points on Earth. Travel time is estimated based on the selected average speed.</p>
+                    <p>Note: Actual travel time may vary due to traffic, road conditions, and other factors.</p>
+                </div>
+            </div>
+            
+            <div class="result-container">
+                <h2><i class="fas fa-results"></i> Results</h2>
+                
+                <div class="result-box">
+                    <label>Distance Between Points</label>
+                    <div class="distance-result" id="distanceResult">-</div>
+                </div>
+                
+                <div class="result-box">
+                    <label>Estimated Travel Duration</label>
+                    <div class="duration-result" id="durationResult">-</div>
+                </div>
+                
+                <div class="result-box">
+                    <label>Details</label>
+                    <div id="detailsResult">Enter coordinates and click calculate to see results</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This calculator provides estimates only. Actual travel times may vary.</p>
+        <p>Uses the Haversine formula for distance calculation</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculateBtn = document.getElementById('calculateBtn');
+            const transportBtns = document.querySelectorAll('.transport-btn');
+            let currentSpeed = 80; // Default car speed
+            
+            // Set up transportation method buttons
+            transportBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    transportBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSpeed = parseInt(this.dataset.speed);
+                    document.getElementById('customSpeed').value = '';
+                });
+            });
+            
+            // Custom speed input
+            document.getElementById('customSpeed').addEventListener('input', function() {
+                if (this.value) {
+                    transportBtns.forEach(b => b.classList.remove('active'));
+                    currentSpeed = parseInt(this.value) || 0;
+                }
+            });
+            
+            // Calculate button click
+            calculateBtn.addEventListener('click', function() {
+                // Get input values
+                const startLat = parseFloat(document.getElementById('startLat').value);
+                const startLng = parseFloat(document.getElementById('startLng').value);
+                const destLat = parseFloat(document.getElementById('destLat').value);
+                const destLng = parseFloat(document.getElementById('destLng').value);
+                
+                // Validate inputs
+                if (isNaN(startLat) || isNaN(startLng) || isNaN(destLat) || isNaN(destLng)) {
+                    alert('Please enter valid coordinates for all fields');
+                    return;
+                }
+                
+                if (currentSpeed <= 0) {
+                    alert('Please enter a valid speed');
+                    return;
+                }
+                
+                // Calculate distance using Haversine formula
+                const distance = calculateDistance(startLat, startLng, destLat, destLng);
+                
+                // Calculate duration
+                const duration = calculateDuration(distance, currentSpeed);
+                
+                // Display results
+                document.getElementById('distanceResult').textContent = 
+                    `${distance.toFixed(2)} km (${(distance * 0.621371).toFixed(2)} miles)`;
+                
+                document.getElementById('durationResult').textContent = formatDuration(duration);
+                
+                document.getElementById('detailsResult').innerHTML = `
+                    <p><i class="fas fa-route"></i> <strong>Distance:</strong> ${distance.toFixed(2)} km</p>
+                    <p><i class="fas fa-tachometer-alt"></i> <strong>Speed:</strong> ${currentSpeed} km/h</p>
+                    <p><i class="fas fa-clock"></i> <strong>Time:</strong> ${formatDuration(duration)}</p>
+                    <p><i class="fas fa-info-circle"></i> <strong>Method:</strong> Haversine formula with straight-line distance</p>
+                `;
+            });
+            
+            // Haversine formula to calculate distance between two coordinates
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Earth's radius in kilometers
+                const dLat = deg2rad(lat2 - lat1);
+                const dLon = deg2rad(lon2 - lon1);
+                
+                const a = 
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                const distance = R * c; // Distance in km
+                
+                return distance;
+            }
+            
+            function deg2rad(deg) {
+                return deg * (Math.PI/180);
+            }
+            
+            // Calculate duration based on distance and speed
+            function calculateDuration(distance, speed) {
+                return (distance / speed) * 60; // Duration in minutes
+            }
+            
+            // Format duration into hours and minutes
+            function formatDuration(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = Math.round(minutes % 60);
+                
+                if (hours > 0) {
+                    return `${hours} hour${hours !== 1 ? 's' : ''} ${mins} minute${mins !== 1 ? 's' : ''}`;
+                } else {
+                    return `${mins} minute${mins !== 1 ? 's' : ''}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

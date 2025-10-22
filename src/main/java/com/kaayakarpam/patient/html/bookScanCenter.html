@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Book Scan Centre</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+       nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+      margin-top : 20px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+    /* Main Section */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #2980b9;
+    }
+
+    /* Form */
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width : 800px;
+     margin: 20px 50px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color : green;
+    }
+
+    select, input[type="date"], button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #1abc9c;
+    }
+
+    /* Hospital Cards */
+    #hospitalList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .hospital-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .hospital-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .hospital-card h3 {
+      margin: 0 0 10px;
+      color: #2c3e50;
+    }
+
+    .hospital-card p {
+      margin: 5px 0 15px;
+      color: #7f8c8d;
+    }
+
+    .hospital-card button {
+      width: auto;
+      padding: 8px 16px;
+      background-color: #27ae60;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .hospital-card button:hover {
+      background-color: #2ecc71;
+    }
+
+    /* Message */
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #d35400;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+   <h2><i class="fa-solid fa-user-shield"></i> Patient Panel</h2>
+   <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+   <a href="../jsp/patientView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+    <a href="/kaayakarpam/bookAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Book Ambulance</a>
+    <a href="../html/bookScanCenter.html"><i class="fa-solid fa-x-ray"></i> Book Scan Centre</a>
+    <a href="../html/upcomingBookings.html"><i class="fa-solid fa-id-card"></i> Upcoming Appointments</a>
+    <a href="../html/viewHistory.html"><i class="fa-solid fa-clock-rotate-left"></i> Patient History</a>
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-id-card"></i> View Profile</a>
+  </nav>
+
+  <div class="main">
+    <h2>Book Scan Centre</h2>
+
+    <form id="scanForm">
+      <label for="scanTypeId">Select Scan Type</label>
+      <select id="scanTypeId" name="scanTypeId" required>
+        <option value="">Loading scan types...</option>
+      </select>
+
+      <label for="scanDate">Select Date</label>
+      <input type="date" id="scanDate" name="scanDate" required />
+
+      <button type="submit">Find Hospitals</button>
+    </form>
+
+    <div id="hospitalList"></div>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    // Load scan types
+    // one race condition, if user select scantype and date and find the respective hospitals, at a same time admin deletes the hospital, and after 1 sec user click the book option and the appointment was booked successfully?. 
+    async function loadScanTypes() {
+      const select = document.getElementById("scanTypeId");
+      try {
+        const res = await fetch("/kaayakarpam/scantypes");
+        const data = await res.json();
+        select.innerHTML = "";
+        data.forEach(scan => {
+          const opt = document.createElement("option");
+          opt.value = scan.scanTypeId;
+          opt.textContent = `${scan.scanTypeId} - ${scan.scanTypeName}`;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        select.innerHTML = "<option>Error loading types</option>";
+      }
+    }
+
+    // Prevent selecting past dates
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("scanDate").setAttribute("min", today);
+
+    // Handle form submit
+    document.getElementById("scanForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const scanTypeId = document.getElementById("scanTypeId").value;
+      const scanDate = document.getElementById("scanDate").value;
+
+      if (!scanTypeId || !scanDate) {
+        document.getElementById("message").textContent = "Please select scan type and date.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/kaayakarpam/hospitalList?scanTypeId=${scanTypeId}&scanDate=${scanDate}`);
+        const hospitals = await res.json();
+        const listDiv = document.getElementById("hospitalList");
+        listDiv.innerHTML = "";
+
+        if (hospitals.length === 0) {
+          listDiv.textContent = "No hospitals available for this scan.";
+          return;
+        }
+
+        hospitals.forEach(h => {
+          const card = document.createElement("div");
+          card.classList.add("hospital-card");
+          card.innerHTML = `
+          <h3>${h.hospitalName}</h3>
+          <p>${h.hospitalAddress}</p>
+          <p>📞 ${h.hospitalPhoneNumber}</p>
+          <button onclick="bookScan('${h.hospitalId}', '${scanTypeId}', '${scanDate}')">Book</button>
+        `;
+          listDiv.appendChild(card);
+        });
+      } catch (err) {
+        document.getElementById("hospitalList").textContent = "Error fetching hospitals.";
+      }
+    });
+
+      // Booking function
+    
+        async function bookScan(hospitalId, scanTypeId, scanDate) {
+          try {
+            const res = await fetch("/kaayakarpam/bookScan", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ hospitalId, scanTypeId, scanDate })
+            });
+            const result = await res.json();
+
+            // show message from backend
+            const msgEl = document.getElementById("message");
+            msgEl.textContent = result.message || result.error;
+
+            // style based on status
+            if (result.status === "success") {
+              msgEl.style.color = "green";
+            } else {
+              msgEl.style.color = "red";
+            }
+
+            // reload after 2 seconds
+            setTimeout(() => {
+              location.reload();
+            }, 5000);
+          } 
+          catch (err) {
+            const msgEl = document.getElementById("message");
+            msgEl.textContent = "Booking failed.";
+            msgEl.style.color = "red";
+
+            // reload after 2 seconds
+            setTimeout(() => {
+              location.reload();
+            }, 5000);
+          }
+        }
+
+        window.onload = function() {
+          loadScanTypes(); 
+        };
+
+   
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,369 @@
+The JDBC connection is fully managed by the MySQL Connector/J driver.
+
+We configure a HikariCP pool in tomcat/conf/context.xml.
+
+When Tomcat starts up, it reads the context.xml file, understands the configuration, and creates the HikariCP pool.
+
+HikariCP uses JNDI and makes the initial connection to the JDBC URL we provided.
+
+The pool is generated. Inside this pool, connections are made to all the MySQL instances we listed (3331, 3332, 3333, 3334, 3335).
+
+The order of the nodes segregates master and slave. The first node (3331) is automatically treated as the master, and the others are treated as slaves.
+
+It is automatically configured. The MySQL driver handles everything. No manual code is needed to send writes to the master and reads to the slaves.
+
+Load balancing for reads is maintained by the MySQL driver using a round-robin algorithm across the slave nodes.
+
+HikariCP and the driver work together to check the health of the connections in the pool.
+
+If an error occurs from the master, the MySQL driver's failover mechanism kicks in. It asks the other nodes in the cluster, "Who is the new master?"
+
+The MySQL Group Replication system (the database nodes themselves) runs the election algorithm and elects a new master. The driver just finds out who it is.
+
+The connection to the failed, old master is evicted from the HikariCP pool and replaced with a new connection to a healthy node. The pool constantly refreshes itself, so dead connections don't stick around.
+
+
+SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = 'patient' AND REFERENCED_COLUMN_NAME = 'patient_id';
+
+ALTER TABLE patient_credentials DROP FOREIGN KEY patient_credentials_ibfk_1;
+
+ALTER TABLE patient MODIFY patient_id BIGINT AUTO_INCREMENT;
+
+ALTER TABLE patient_credentials MODIFY patient_id BIGINT;
+
+
+
+hospital management
+
+admin 
+hospital staff
+hospital
+hospital staff credentials
+patient
+patient credentials
+scan_center
+Ambulance
+facility
+
+Table admin {
+  admin_id ,admin_name ,admin_mailId ,admin_password,admin_password_salt ,admin_mobileNumber 
+}
+
+Table hospital {
+  hospital_id ,hospital_name ,hospital_location  ,hospital_ceoName,hospital_address 
+}
+
+Table hospital_facilities{
+     hospital_id, totalBeds, labCount, freeBeds
+}
+
+Table beds{
+     bedNumber(not pk, allow dup because in each hospital bed num starts from1), hospitalId
+}
+
+Table hospital_staffs {
+  staff_id ,staff_name ,staff_age ,staff_gender ,staff_hospital_id ,is_in_duty 
+}
+
+Table hospital_staff_credentials {
+  staff_id ,staff_mailId ,staff_password ,staff_passwordSalt ,staff_mobileNumber 
+}
+
+Table patient {
+  patient_id ,patient_name ,patient_age ,patient_gender,patient_address 
+}
+
+Table patient_credentials {
+  patient_id ,patient_mailId ,patient_password ,patient_passwordSalt ,patient_mobileNumber 
+}
+
+Table Scan_center{
+   scan_center_id, hospital_id, facility_id (ref, hospital.hospitalId, scan_facility.scan_facilityId)
+}
+
+Table Ambulance{
+    AmbulanceId, hospitalId, from, to, via (ref, hospital.hospitalId)
+}
+
+Table scan_facility{
+    scan_facilityId, scan_facilityName
+}
+
+Table request_to_admin{
+       request_id, patientId, hospitalId, requestStatus(accept/not) , requestType(critical/normal/scan), isBedAllocated
+}
+
+Table request_to_hospital_staffs{
+     request_id, patientId, hospitalId, requestStatus(accept/not) , requestType(critical/normal/scan), isBedAllocated, request_accepted_staffId, ip/op
+}
+
+Table inPatients{
+     id,requestId, bedNumber
+}
+
+Table outPatients{
+     id,requestId
+}
+
+Table icuPatients{
+     id, hospitalId, patientId, isBedAllocated(true/false), bedNumber(if ture).
+}
+
+Table distance{
+    id, from, to , distance, approxmiate_duration(minutes)
+}
+
+Table ambulance status{
+    ambulanceId, currentLocation, isInWorking(true/false), 
+}
+
+flow
+in hosiptal there are scan_center facility and ambulance facilities.
+admin can able to add hospital, view patient details, view hospital details, accept request from patients.
+
+patients can able to book scan centers and Ambulance.
+hospitalstaffs can able to view and concern the request table.
+Ambulance can be book by anyone(not only registered user)
+
+There are 3 types of patients(critical, normal, booked)
+
+critical->
+       if an accident happen(severe), any public can book the ambulance(html).But the patient details was not known.
+       after critical booking , ambulance was allocated by priority(by minimum distance).
+       after that ambulance go to nearby own hospital(by short distance)
+       after that icu was allocated.(added and removed from icu after some time)
+       Now the patient details was not known, so request was passed to hospital_staffs, they need to book.(not known means leave it). if they book,  
+request was removed, if not the request will persist.
+       then bed was also allocated. patient was added to inPatients table
+       if the details was not known for 5 days , then the request was removed from the table and assumed the patient was handover to police
+       
+Normal->
+       if an accident happen, the patient was not so critical, then any public can book the ambulance
+       after that bed was reserved.
+        Now patient is in consious.
+       request was put in the request table, then hospital staff fill the details of the patient. 
+       Patient was admitted in the bed.
+
+booked->
+       the patient itself book the ambulance for scan purpose
+       the details was filled by the patient itself.
+       details was entered into request table, as well as outpatients table.
+       
+       
+
+CREATE TABLE outpatient_visits (
+  visit_id INT AUTO_INCREMENT PRIMARY KEY,
+  request_id INT NOT NULL UNIQUE, -- Links to the original Scan request
+  patient_id INT NOT NULL,
+  -- You might also want to add which scan center/facility was used
+  -- scan_center_id INT NOT NULL, (Would require a scan_centers table)
+  visit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the scan actually happened
+  findings_summary TEXT, -- Optional: a brief summary of the results
+  FOREIGN KEY (request_id) REFERENCES requests(request_id) ON DELETE CASCADE,
+  FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE
+  -- FOREIGN KEY (scan_center_id) REFERENCES scan_centers(scan_center_id)
+);
+
+
+
+
+SELECT 
+    h.hospital_id,
+    h.hospital_name,
+    h.address,
+    h.location,
+    ROUND(
+        6371 * ACOS(
+            COS(RADIANS(8.811480)) * COS(RADIANS(h.latitude)) *
+            COS(RADIANS(h.longitude) - RADIANS(78.134313)) +
+            SIN(RADIANS(8.811480)) * SIN(RADIANS(h.latitude))
+        ),
+        2
+    ) AS distance_km
+FROM hospital h
+ORDER BY distance_km ASC;
+
+
+
+CREATE TABLE ambulance_request (
+  request_id INT AUTO_INCREMENT PRIMARY KEY,
+  location VARCHAR(255) default null,
+  latitude DECIMAL(9,6) NOT NULL,
+  longitude DECIMAL(9,6) NOT NULL,
+  request_type ENUM('CRITICAL','NORMAL','BOOK') NOT NULL,
+  status ENUM('PENDING','ALLOCATED','COMPLETED','EXPIRED') DEFAULT 'PENDING',
+  hospital_id SMALLINT NULL,
+  ambulance_id SMALLINT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hospital_id) REFERENCES hospital(hospital_id),
+  FOREIGN KEY (ambulance_id) REFERENCES ambulance(ambulance_id)
+);
+
+
+-----------------------------------------------------
+1)form
+  |(accident location)
+2)find nearby hospital with available bed.
+  |(fetch hospitalId)
+3)if hospital is found, fetch their ambulances
+  |
+4)find ambulance nearer to accident location and is it free
+  |(fetch ambulanceId)
+5)assign hospital_id and ambulance_id in the ambulance_request table  
+  |(calculate distance and duration to reach)
+6)after that time , set status as completed  
+
+
+
+----------------------------------------------------
+
+SELECT 
+    h.hospital_id, 
+    ROUND(
+        6371 * ACOS(
+            COS(RADIANS(8.187059)) * COS(RADIANS(h.latitude)) *
+            COS(RADIANS(h.longitude) - RADIANS(77.428284)) +
+            SIN(RADIANS(8.187059)) * SIN(RADIANS(h.latitude))
+        ),
+        2
+    ) AS distance_km
+FROM hospital h JOIN hospital_facilities hf
+ON h.hospital_id  = hf.hospital_id WHERE hf.free_general_beds > 0
+ORDER BY distance_km ASC limit 1;
+
+select a.ambulance_id ,
+            ROUND(6371 * ACOS(
+                COS(RADIANS(8.187059)) * COS(RADIANS(a.latitude)) *
+                COS(RADIANS(a.longitude) - RADIANS(77.428284)) +
+                SIN(RADIANS(8.187059)) * SIN(RADIANS(a.latitude))
+            ),
+            2
+        ) AS distance_km 
+from ambulance a  where a.hospital_id = 1 AND a.is_available = 1 ORDER BY distance_km ASC limit 1; 
+---------------------------------------------------------------------
+staff register
+      |
+create table temp_allocation(id, req_id, when reach , isBedAllocated)  --periodical
+      |
+create table inPatient_stays(id, temp_id, name, address) 
+
+
+create table patient_temporary_requests(temporary_request_id int primary key auto_increment , ambulance_request_id int not null, request_time Timestamp, isBedAllocated tinyint(1) default 0, foreign key (ambulance_request_id) references ambulance_request (request_id));
+
+------------------------------------------------------------------------
+which staff allocate bed
+patient now in hospital / not
+
+----------------------------------------------------------------------
+update hospital
+
+hosptial view for staff
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Staff Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #34495e;
+      padding: 10px;
+    }
+
+    nav a {
+      color: green;
+      text-decoration: none;
+      margin: 0 15px;
+      padding: 8px 15px;
+      border-radius: 5px;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color : blue;
+    }
+    
+    .notification{
+        padding : 20px;
+    }
+    
+    .notification-card{
+          background: white;
+          border-radius: 8px;
+          padding: 20px;
+          margin: 15px 0;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .notification-card h2{
+          margin-top: 0;
+          color : yellow;
+    }
+  </style>
+</head>
+<body>
+  <header>
+  <h1>Welcome, <%= session.getAttribute("role") %></h1>
+</header>
+
+  <nav>
+    <a href="../../common/web/html/searchHospital.html">Search Hospitals</a>
+    <a href="../html/viewInPatients.html">View_InPatients</a>
+    <a href="../html/viewHospitalDetails.html"> VIEW_hospitalDetails</a>
+    <a href= "/kaayakarpam/hospitalUpdation">Update Hospital Details </a>
+    <a href="/kaayakarpam/manualProfile">View Profile</a> 
+    <a href = "../../common/web/html/editProfile.html"> Edit profile</a>
+    <a href = "../html/patientManagement.html">patient Requests</a>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h3>Quick Actions</h3>
+      <p>Use the navigation menu above to manage hospitals and patients.</p>
+    </div>
+  </div>
+  
+  <div class = "notification">
+        <div class = "notification-card">
+                <h2> Notifications</h2>
+                <p> The Regional Language feature updation is in progress </p>
+                <p> The User feedback feature updation is in progress </p>
+                <p> UI will need more updation </p>
+         </div>
+  </div>
+</body>
+</html>
+

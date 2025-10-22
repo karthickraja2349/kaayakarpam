@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Hospital Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+     nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+      margin-top:15px;
+      margin-left : 20px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 6px 0; /* Reduced from 12px to 6px */
+    padding: 8px 12px; /* Reduced padding from 10px to 8px */
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+
+
+    /* Main content wrapper */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #0077cc;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .card h2 {
+      margin: 0 0 15px;
+      font-size: 1.4rem;
+      color: #0077cc;
+    }
+
+    .info {
+      margin: 8px 0;
+      font-size: 1rem;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #444;
+    }
+
+    .error {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+    
+    /* Update button style */
+    .update-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    
+    .update-btn:hover {
+      background-color: #005fa3;
+    }
+    
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 350px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .close {
+      color: #aaa;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover {
+      color: black;
+    }
+    
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    
+    .modal-body label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    .modal-body input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .modal-footer button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .modal-footer button.cancel {
+      background-color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Staff Panel</h2>
+     <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <a href="../jsp/staffView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+    <a href="../html/viewInPatients.html"><i class="fa-solid fa-bed"></i> View InPatients</a>
+    <a href="../html/viewHospitalDetails.html"><i class="fa-solid fa-hospital"></i> Hospital Details</a>
+    <a href="../html/viewScanAppointments.html"><i class="fa fa-calendar" aria-hidden="true"></i> Today Scan Appointments </a>
+    <a href="../html/viewUpcomingScanAppointments.html"><i class="fas fa-hourglass"></i> Upcoming Scan Appointments </a>
+    <a href="../html/scanAppointmentsHistory.html"><i class="fas fa-hourglass-end"></i> Scan Appointments History</a>
+    <a href="../html/patientManagement.html"><i class="fa-solid fa-file-medical"></i> Patient Requests</a>
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+  </nav>
+
+  <div class="main">
+    <header>🏥 Hospital Information</header>
+    <div class="container" id="hospital-container"></div>
+    <div class="error" id="error-msg"></div>
+    
+    <header>🔬 Scan Centers</header>
+    <div class="container" id="scan-centre-container"></div>
+    <div class="error" id="error-message"></div>
+  
+      <header>🚑 Ambulances</header>
+     <div class = "container" id = "ambulance-container"></div>
+     <div class = "error" id = "error-message"></div>
+  </div>   
+  
+  <!-- Modal for updating bookings per day -->
+  <div id="updateModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Update Bookings Per Day</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <label for="bookingCount">Enter number of bookings per day:</label>
+        <input type="number" id="bookingCount" min="1" required>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel">Cancel</button>
+        <button id="updateConfirm">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentScanCenterId = null;
+    
+    async function loadHospitalDetails() {
+      const hospitalContainer = document.getElementById("hospital-container");
+      const errorMsg = document.getElementById("error-msg");
+      errorMsg.textContent = "";
+      hospitalContainer.innerHTML = "";
+
+      try {
+        const response = await fetch("/kaayakarpam/hospitalDetails", { method: "GET" });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized. Please login again.");
+          } else if (response.status === 404) {
+            throw new Error("No hospital was found for this user.");
+          } else {
+            throw new Error("Failed to fetch hospital details.");
+          }
+        }
+
+        const hospitals = await response.json();
+
+        if (hospitals.length === 0) {
+          errorMsg.textContent = "No hospital details available.";
+          return;
+        }
+
+        const h = hospitals[0];
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <h2>${h.hospitalName}</h2>
+          <div class="info"><span class="highlight">📍 Address:</span> ${h.hospitalAddress}</div>
+          <div class="info"><span class="highlight">📞 Phone:</span> ${h.hospitalPhoneNumber}</div>
+          <div class="info"><span class="highlight">👤 CEO:</span> ${h.ceo}</div>
+          <div class="info"><span class="highlight">🛏 Total Beds:</span> ${h.totalBeds}</div>
+          <div class="info"><span class="highlight">🛌 Free Beds:</span> ${h.freeBeds}</div>
+          <div class="info"><span class="highlight">🏥 ICU Beds:</span> ${h.icu}</div>
+    <!--      <div class="info"><span class="highlight">🧪 Labs:</span> ${h.labCount}</div> -->
+     <!--     <div class="info"><span class="highlight">🚑 Ambulances:</span> ${h.ambulanceCount}</div> -->
+        `;
+        hospitalContainer.appendChild(card);
+      } catch (error) {
+        errorMsg.textContent = error.message;
+      }
+    }
+    
+    async function loadScanCentres() {
+      const scanCentreContainer = document.getElementById("scan-centre-container");
+      const errorMsg = document.getElementById("error-message");
+      errorMsg.textContent = "";
+      scanCentreContainer.innerHTML = "";
+
+      try {
+        const response = await fetch("/kaayakarpam/scanCentre", { method: "GET" });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized. Please login again.");
+          } else if (response.status === 404) {
+            throw new Error("No scan centre was found for this hospital.");
+          } else {
+            throw new Error("Failed to fetch scan-centre details.");
+          }
+        }
+
+        const scanCentres = await response.json();
+
+        if (scanCentres.length === 0) {
+          errorMsg.textContent = "No scan centre details available.";
+          return;
+        }
+
+        // Loop through each scan centre
+        scanCentres.forEach(sc => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.id = `scan-center-${sc.scan_centre_id}`;
+
+          card.innerHTML = `
+            <h3>🧪 ${sc.scan_type_name}</h3>
+            <div class="info"><span class="highlight">📅 Bookings Per Day:</span> <span class="booking-count">${sc.total_booking_per_day}</span></div>
+            <button class="update-btn" data-id="${sc.scan_centre_id}">Update</button>
+          `;
+
+          scanCentreContainer.appendChild(card);
+        });
+        
+        // Add event listeners to update buttons
+        document.querySelectorAll('.update-btn').forEach(button => {
+          button.addEventListener('click', function() {
+            const scanCenterId = this.getAttribute('data-id');
+            openUpdateModal(scanCenterId);
+          });
+        });
+
+      } catch (error) {
+        errorMsg.textContent = error.message;
+      }
+    }
+    
+    async function loadAmbulances() {
+      const ambulanceContainer = document.getElementById("ambulance-container");
+      const errorMsg = document.getElementById("error-message");
+      errorMsg.textContent = "";
+      ambulanceContainer.innerHTML = "";
+
+      try {
+        const response = await fetch("/kaayakarpam/ambulanceView", { method: "GET" });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized. Please login again.");
+          } 
+          else if (response.status === 404) {
+            throw new Error("No Ambulance was found for this hospital.");
+          }
+          else {
+            throw new Error("Failed to fetch Ambulance details.");
+          }
+        }
+
+        const ambulances = await response.json();
+
+        if (ambulances.length === 0) {
+          errorMsg.textContent = "No Ambulance details available.";
+          return;
+        }
+
+        ambulances.forEach(ambulance => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.id = `ambulance-view-${ambulance.ambulanceId}`;
+
+          card.innerHTML = `
+            <h3>🫆 Ambulance Number :${ambulance.ambulanceNumber}</h3>
+            <div class="info"><span class="highlight">📍Halting Location:</span> <span class="location">${ambulance.haltingLocation}</span></div>
+             <div class="info"><span class="highlight">🟦Status:</span> <span class="status">${ambulance.status}</span></div>
+          `;
+
+          ambulanceContainer.appendChild(card);
+        });
+      } 
+      catch (error) {
+        errorMsg.textContent = error.message;
+      }
+    }
+    
+    
+    function openUpdateModal(scanCenterId) {
+      currentScanCenterId = scanCenterId;
+      const modal = document.getElementById('updateModal');
+      const currentCount = document.querySelector(`#scan-center-${scanCenterId} .booking-count`).textContent;
+      document.getElementById('bookingCount').value = currentCount;
+      modal.style.display = 'block';
+    }
+    
+    function closeUpdateModal() {
+      const modal = document.getElementById('updateModal');
+      modal.style.display = 'none';
+      currentScanCenterId = null;
+      document.getElementById('bookingCount').value = '';
+    }
+    
+    async function updateBookingCount() {
+      if (!currentScanCenterId) return;
+      
+      const newCount = document.getElementById('bookingCount').value;
+      if (!newCount || newCount < 0) {
+        alert('Please enter a valid number of bookings');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/kaayakarpam/scanCentre', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            scan_centre_id: currentScanCenterId,
+            total_booking_per_day: newCount
+          })
+        });
+        
+        if (response.ok) {
+          // Update the UI with the new count
+          document.querySelector(`#scan-center-${currentScanCenterId} .booking-count`).textContent = newCount;
+          closeUpdateModal();
+          alert('Booking count updated successfully!');
+        } else {
+          throw new Error('Failed to update booking count');
+        }
+      } catch (error) {
+        alert('Error updating booking count: ' + error.message);
+      }
+    }
+    
+    // Set up modal event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('updateModal');
+      const closeBtn = document.querySelector('.close');
+      const cancelBtn = document.querySelector('.cancel');
+      const updateBtn = document.getElementById('updateConfirm');
+      
+      closeBtn.addEventListener('click', closeUpdateModal);
+      cancelBtn.addEventListener('click', closeUpdateModal);
+      updateBtn.addEventListener('click', updateBookingCount);
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          closeUpdateModal();
+        }
+      });
+    });
+   
+   setInterval(loadHospitalDetails, 5000);
+   setInterval(loadScanCentres, 5000);
+   setInterval(loadAmbulances, 5000);
+   
+    window.onload = function() {
+      loadHospitalDetails();
+      loadScanCentres();
+      loadAmbulances();
+    };
+  </script>
+</body>
+</html>

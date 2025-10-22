@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Search Hospital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .search-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      max-width: 500px;
+      margin: auto;
+    }
+    .search-container h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .search-container button {
+      background: #007BFF;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .search-container button:hover {
+      background: #0056b3;
+    }
+    #results {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .hospital {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+      <div class="search-container">
+              <h2>Search Hospitals</h2>
+
+              <input type="text" id="name" placeholder="Hospital Name">
+              <input type="text" id="location" placeholder="Location">
+              <input type="number" id="freebeds" placeholder="Minimum Free Beds">
+              <input type="number" id="icu" placeholder="Minimum ICU Beds">
+              <input type="number" id="ambulance" placeholder="Minimum Ambulances">
+
+              <button onclick="search()">Search</button>
+      </div>
+
+      <div id="results"></div>
+      
+      <script>
+          async  function search(){
+                 const params = {
+                        name : document.getElementById("name").value.trim(),
+                        location : document.getElementById("location").value.trim(),
+                        freebeds : document.getElementById("freebeds").value.trim(),
+                        icu : document.getElementById("icu").value.trim(),
+                        ambulance : document.getElementById("ambulance").value.trim()
+                 };
+                 
+                 fetch("/kaayakarpam/searchHospital?" + new  URLSearchParams(params))
+                 .then(response => response.json())
+                 .then(data => {
+                      const result = document.getElementById("results");
+                      result.innerHTML = "";
+                      if(data.length == 0)
+                           result.innerHTML = "<p>No hospitals found</p>";
+                      else{
+                          data.forEach(h => {
+                                results.innerHTML += `
+                                  <div class="hospital">
+                                        <strong>${h.name}</strong> <br>
+                                        Location: ${h.location} <br>
+                                        Free Beds: ${h.freebeds} <br>
+                                        ICU Beds: ${h.icu} <br>
+                                        Ambulances: ${h.ambulance}<br>
+                                        phone_number : ${h.phone_number}
+                                  </div>
+                                `;
+                          });      
+                      }
+                 })
+                 .catch(err => console.error("Error:", err));
+            }
+      </script>
+</body>
+</html>
+
+<!--
+name
+location
+no of freebed 
+no of icu
+no of ambulance
+-->
+

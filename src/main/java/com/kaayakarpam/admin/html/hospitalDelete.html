@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        h1{
+            text-align : center;
+            color : red;
+            margin-left : 225px;
+            margin-top: 0;
+        }
+
+        /* Header */
+      .header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0; /* Ensure this is 0 */
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 0; 
+}
+
+        /* Main container for sidebar and content */
+      .main-container {
+    display: flex;
+    flex: 1;
+    margin-top: 0; /* Ensure no top margin */
+}
+
+        /* Sidebar */
+nav {
+  width: 240px;
+  background-color: #2c3e50;
+  padding: 20px 10px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+}
+
+
+        nav h2 {
+            color: #ecf0f1;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 22px;
+            margin-top : 25px;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 12px 0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            transition: 0.3s;
+            font-size: 15px;
+        }
+
+        nav a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #1abc9c;
+            color: #fff;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        
+        .card-title {
+            margin: 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+        
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+        
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .hospital-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .hospital-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+        }
+        
+        .hospital-card.selected {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+        
+        .high-severity { color: #e74c3c; font-weight: bold; }
+        .medium-severity { color: #f39c12; }
+        .low-severity { color: #27ae60; }
+        
+        .patient-assignment ul { 
+            margin: 10px 0; 
+            padding-left: 20px; 
+            max-height: 150px; 
+            overflow-y: auto; 
+        }
+        
+        .transfer-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        
+        
+        form {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            size : 100px;
+        }
+        
+        
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            nav {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+            
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .hospital-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚠️ Admin, please confirm before submitting. This action cannot be undone!</h1>
+      
+    </div>
+    
+    <div class="main-container">
+        <nav>
+            <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+            <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+            <a href="../jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+       <!--     <a href="../html/addHospital.html"><i class="fa-solid fa-hospital"></i> Add Hospital</a>
+            <a href="../html/hospitalDelete.html"><i class="fa-solid fa-trash"></i> Delete Hospital</a> -->
+            <a href="../html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i> Manage Hospitals</a>
+        <!--    <a href="../html/addScanCentres.html"><i class="fa-solid fa-microscope"></i> Add Scan Centres</a> -->
+            <a href="../html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+          <!--  <a href="../html/addAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Add Ambulance</a> -->
+            <a href="../html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a> 
+            <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+        </nav>
+        
+        <div class="content">
+            <div class="container">
+                <div id="message-container"></div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Delete Hospital</h2>
+                    </div>
+                    <form id="delete-hospital-form" onsubmit="deleteHospital(event)">
+                        <div class="form-group">
+                            <label for="hospital-id">Hospital ID:</label>
+                            <input type="number" id="hospital-id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hospital-name">Hospital Name:</label>
+                            <input type="text" id="hospital-name" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Delete Hospital</button>
+                    </form>
+                </div>
+                
+                <div id="transfer-section" class="card" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">Patient Transfer Plan</h2>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div class="transfer-summary">
+                            <h3>Transfer Summary</h3>
+                            <p><strong>Patients to be moved to temporary requests:</strong> <span id="patient-count">0</span></p>
+                            <p><strong>Note:</strong> Patients will be moved to temporary requests table and need to be approved by target hospitals.</p>
+                        </div>
+                        
+                        <h3>Patients to be Transferred (Sorted by Criticality)</h3>
+                        <div id="patients-list" style="margin-bottom: 20px;"></div>
+                        
+                        <h3>Automatic Transfer Plan</h3>
+                        <p>Patients will be distributed to these hospitals based on availability and criticality:</p>
+                        <div id="hospitals-container" class="hospital-grid"></div>
+                        
+                        <div class="button-group">
+                            <button id="confirm-transfer-btn" class="btn btn-success" onclick="confirmTransfer()">Confirm Transfer & Delete Hospital</button>
+                            <button class="btn btn-primary" onclick="cancelTransfer()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let transferPlan = {};
+        let patients = [];
+        let hospitals = [];
+        let sourceHospitalId = 0;
+        
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.innerHTML = `<div class="message ${type}-message">${message}</div>`;
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        async function deleteHospital(event) {
+            event.preventDefault();
+            
+            const hospitalId = document.getElementById('hospital-id').value;
+            const hospitalName = document.getElementById('hospital-name').value;
+            sourceHospitalId = hospitalId;
+            
+            try {
+                showMessage('Processing hospital deletion...', 'success');
+                const response = await fetch('/kaayakarpam/hospitalDelete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ hospitalId, hospitalName })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage(result.success, 'success');
+                    // If the server returns transfer plan data, show the transfer UI
+                    if (result.transferPlan) {
+                        transferPlan = result.transferPlan;
+                        patients = result.patients || [];
+                        hospitals = result.hospitals || [];
+                        showTransferSection();
+                    }
+                } else {
+                    if (result.error && result.error.includes('Duplicate entry')) 
+                        showMessage('This hospital has already been deleted from the system.', 'error');
+                    else    
+                       showMessage(result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error: ' + error.message, 'error');
+            }
+            
+           setTimeout(() => {
+                 window.location.reload();
+            }, 5000);
+   
+        }
+        
+        function showTransferSection() {
+            document.getElementById('transfer-section').style.display = 'block';
+            document.getElementById('patient-count').textContent = patients.length;
+            
+            // Display patients list
+            const patientsList = document.getElementById('patients-list');
+            patientsList.innerHTML = '<table><thead><tr><th>Patient ID</th><th>Name</th><th>Condition</th><th>Severity</th><th>Assigned Hospital</th></tr></thead><tbody></tbody></table>';
+            
+            const tbody = patientsList.querySelector('tbody');
+            
+            // Create a map of patient assignments
+            const patientAssignments = {};
+            Object.keys(transferPlan).forEach(hospitalId => {
+                transferPlan[hospitalId].forEach(patientId => {
+                    patientAssignments[patientId] = hospitalId;
+                });
+            });
+            
+            patients.forEach(patient => {
+                const row = document.createElement('tr');
+                const severityClass = patient.severity >= 8 ? 'high-severity' : (patient.severity >= 4 ? 'medium-severity' : 'low-severity');
+                const assignedHospitalId = patientAssignments[patient.patient_id];
+                const hospital = hospitals.find(h => h.hospital_id == assignedHospitalId);
+                const hospitalName = hospital ? hospital.hospital_name : 'Not assigned';
+                
+                row.innerHTML = `
+                    <td>${patient.patient_id}</td>
+                    <td>${patient.patient_name}</td>
+                    <td>${patient.condition}</td>
+                    <td class="${severityClass}">${patient.severity}/10</td>
+                    <td>${hospitalName}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Display hospitals with patient assignments
+            const hospitalsContainer = document.getElementById('hospitals-container');
+            hospitalsContainer.innerHTML = '';
+            
+            hospitals.forEach(hospital => {
+                const hospitalCard = document.createElement('div');
+                hospitalCard.className = 'hospital-card';
+                
+                const patientCount = transferPlan[hospital.hospital_id] ? transferPlan[hospital.hospital_id].length : 0;
+                const capacityText = `${patientCount} patients will be transferred here`;
+                
+                hospitalCard.innerHTML = `
+                    <h4>${hospital.hospital_name}</h4>
+                    <p>Distance: ${hospital.distance} km</p>
+                    <p>Available Beds: ${hospital.free_beds}</p>
+                    <p>${capacityText}</p>
+                    <div class="patient-assignment">
+                        <strong>Patients assigned:</strong>
+                        <ul>
+                `;
+                
+                if (transferPlan[hospital.hospital_id] && transferPlan[hospital.hospital_id].length > 0) {
+                    transferPlan[hospital.hospital_id].forEach(patientId => {
+                        const patient = patients.find(p => p.patient_id == patientId);
+                        if (patient) {
+                            const severityClass = patient.severity >= 8 ? 'high-severity' : (patient.severity >= 4 ? 'medium-severity' : 'low-severity');
+                            hospitalCard.innerHTML += `<li class="${severityClass}">${patient.patient_name} (Severity: ${patient.severity}/10)</li>`;
+                        }
+                    });
+                } else {
+                    hospitalCard.innerHTML += `<li>No patients assigned</li>`;
+                }
+                
+                hospitalCard.innerHTML += `
+                        </ul>
+                    </div>
+                `;
+                
+                hospitalsContainer.appendChild(hospitalCard);
+            });
+        }
+        
+        async function confirmTransfer() {
+            try {
+                showMessage('Processing transfer and hospital deletion...', 'success');
+                
+                const response = await fetch('/kaayakarpam/hospitalDelete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        hospitalId: sourceHospitalId,
+                        hospitalName: document.getElementById('hospital-name').value,
+                        confirmTransfer: true,
+                        transferPlan: transferPlan
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage(result.success, 'success');
+                    // Reset form and hide transfer section
+                    document.getElementById('delete-hospital-form').reset();
+                    document.getElementById('transfer-section').style.display = 'none';
+                } else {
+                    showMessage(result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error: ' + error.message, 'error');
+            }
+        }
+        
+        function cancelTransfer() {
+            document.getElementById('transfer-section').style.display = 'none';
+            showMessage('Transfer cancelled', 'success');
+        }
+        
+        //setInterval(deleteHospital, 6000);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Tomcat Application",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8000,
+            "projectName": "kayakarpam"
+        },
+        {
+            "type": "java",
+            "name": "Launch Tomcat with Debug",
+            "request": "launch",
+            "mainClass": "org.apache.catalina.startup.Bootstrap",
+            "args": [
+                "start"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "CATALINA_HOME": "/home/karthick-ts476/Server/apache-tomcat-10.1.44",
+                "CATALINA_BASE": "/home/karthick-ts476/Server/apache-tomcat-10.1.44",
+                "JAVA_OPTS": "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+            },
+            "projectName": "kaayakarpam"
+        }
+    ]
+}

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Ambulances</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar  */
+    nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 6px 6px;
+      border-radius: 6px;
+      transition: background 0.3s;
+      font-size: 15px;
+    }
+    
+     nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      background-color: #f1f5f9;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .header h1 {
+      color: #1e293b;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      padding: 8px 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .action-buttons button {
+      background: #2563eb;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .action-buttons button:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .search-container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+      max-width: 700px;
+    }
+
+    .search-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-title i {
+      color: #3b82f6;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    button#searchBtn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+
+    button#searchBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Results Container */
+    .results-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      flex: 1;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .results-header h2 {
+      color: #1e293b;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .refresh-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .refresh-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    /* Ambulance List */
+    .ambulance-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .ambulance-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: white;
+      transition: all 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .ambulance-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      border-color: #93c5fd;
+    }
+
+    .ambulance-location {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ambulance-location i {
+      color: #ef4444;
+    }
+
+    .ambulance-details {
+      margin-bottom: 15px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .ambulance-details div {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ambulance-details i {
+      color: #3b82f6;
+      width: 18px;
+    }
+
+    .status-available {
+      background: #dcfce7;
+      color: #166534;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-busy {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    /* Message Box */
+    .message {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+
+    .empty-state i {
+      font-size: 64px;
+      margin-bottom: 15px;
+      color: #cbd5e1;
+    }
+
+    .empty-state p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #3b82f6;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 968px) {
+      .ambulance-list {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      
+      nav {
+        width: 100%;
+        padding: 10px;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .action-buttons {
+        justify-content: center;
+      }
+      
+      .ambulance-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .results-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+    <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <a href="../jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+    <a href="../html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i> Manage Hospitals</a>
+    <a href="../html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+    <a href="../html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a>   
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+  </nav>
+  
+  <div class="main">
+    <div class="header">
+      <h1>Manage Ambulances</h1>
+      <div class="action-buttons">
+        <button onclick="location.href='../html/addAmbulance.html'">
+          <i class="fas fa-plus-circle"></i> Add Ambulance
+        </button>
+      </div>
+    </div>
+    
+    <div class="search-container">
+      <div class="search-title">
+        <i class="fas fa-search"></i>
+        <span>Find Ambulances by Hospital</span>
+      </div>
+      <div class="form-group">
+        <label for="hospitalId">Hospital ID</label>
+        <input type="number" id="hospitalId" name="hospitalId" placeholder="Enter the Hospital ID" required>
+      </div>
+      <button id="searchBtn">
+        <i class="fas fa-search"></i> Load Ambulances
+      </button>
+    </div>
+    
+    <div id="messageBox" class="message" style="display: none;"></div>
+    
+    <div class="results-container">
+      <div class="results-header">
+        <h2>Ambulances</h2>
+        <button id="refreshBtn" class="refresh-btn" style="display: none;">
+          <i class="fas fa-sync-alt"></i> Refresh List
+        </button>
+      </div>
+      
+      <div id="ambulanceList" class="ambulance-list">
+        <div class="empty-state">
+          <i class="fas fa-ambulance"></i>
+          <p>Enter a Hospital ID to view its ambulances</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hospitalIdInput = document.getElementById('hospitalId');
+    const searchBtn = document.getElementById('searchBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const messageBox = document.getElementById('messageBox');
+    const ambulanceList = document.getElementById('ambulanceList');
+    
+    let refreshInterval;
+    
+    // Function to show message
+    function showMessage(message, type) {
+        messageBox.textContent = message;
+        messageBox.className = `message ${type}`;
+        messageBox.style.display = 'block';
+        
+        // Hide message after 5 seconds
+        setTimeout(() => {
+            messageBox.style.display = 'none';
+        }, 5000);
+    }
+    
+    // Function to load scan centres
+    async function loadAmbulances() {
+        const hospitalId = hospitalIdInput.value;
+        
+        if (!hospitalId) {
+            showMessage('Please enter a Hospital ID', 'error');
+            return;
+        }
+        
+        // Show loading state
+        ambulanceList.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <div class="spinner"></div>
+                <p>Loading Ambulances...</p>
+            </div>
+        `;
+        
+        try {
+            // Call the GET endpoint to fetch scan centres
+            const res = await fetch(`/kaayakarpam/ambulanceDelete?hospitalId=${hospitalId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                if (result.length > 0) {
+                    let html = '';
+                    result.forEach(ambulance => {
+                        html += `
+                            <div class="ambulance-card" data-id="${ambulance.vehicleNumber}">
+                               <P><strong>Current Location</P>
+                                <div class="ambulance-location">${ambulance.currentLocation}</div>
+                                <div class="ambulance-details">
+                                    <p><strong>Ambulance Number:</strong> ${ambulance.vehicleNumber}</p>
+                                </div>
+                                <button class="delete-btn" data-id="${ambulance.vehicleNumber}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        `;
+                    });
+                    
+                    ambulanceList.innerHTML = html;
+                    refreshBtn.style.display = 'block';
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', deleteAmbulance);
+                    });
+                    
+                    // Start auto-refresh
+                    startAutoRefresh();
+                } else {
+                    ambulanceList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-times-circle"></i>
+                            <p>No Ambulance found for this hospital</p>
+                        </div>
+                    `;
+                    stopAutoRefresh();
+                }
+            } else {
+                throw new Error(result.error || 'Failed to load Ambulances');
+            }
+        } catch (error) {
+            console.error('Error loading Ambulances:', error);
+            ambulanceList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Error loading Ambulances. Please try again.</p>
+                </div>
+            `;
+            showMessage('Error loading Ambulances : ' + error.message, 'error');
+            stopAutoRefresh();
+        }
+    }
+    
+    // Function to delete a scan centre
+    async function deleteAmbulance(event) {
+        const ambulanceNumber = event.target.getAttribute('data-id');
+        const hospitalId = hospitalIdInput.value;
+        
+        if (!hospitalId) {
+            showMessage('Hospital ID is required', 'error');
+            return;
+        }
+        
+        try {
+            // Call the PUT endpoint to delete the scan centre
+            const res = await fetch('/kaayakarpam/ambulanceDelete', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hospitalId, ambulanceNumber})
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                if (result.success) {
+                    showMessage(result.success, 'success');
+                    loadAmbulances();
+                } 
+                else if (result.failure) {
+                    showMessage(result.failure, 'error');
+                } else {
+                    showMessage('Ambulance deleted successfully!', 'success');
+                    loadAmbulances();
+                }
+            } else {
+                if (result.status === "failure") {
+                    showMessage(result.message, 'error');
+                } 
+                else if (result.error) {
+                    showMessage(result.error, 'error');
+                } else {
+                    throw new Error('Failed to delete Ambulance');
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting Ambulance:', error);
+            showMessage('Error deleting Ambulance: ' + error.message, 'error');
+        }
+    }
+    
+    // Set up auto-refresh every 2 seconds when scan centres are loaded
+    function startAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+        refreshInterval = setInterval(loadAmbulances, 8000);
+    }
+    
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+    
+    // Set up event listeners
+    searchBtn.addEventListener('click', loadAmbulances);
+    
+    refreshBtn.addEventListener('click', function() {
+        loadAmbulances();
+        showMessage('Ambulance Details refreshed', 'success');
+    });
+    
+    // Allow pressing Enter to search
+    hospitalIdInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loadAmbulances();
+        }
+    });
+    
+    // Clean up interval when page is unloaded
+    window.addEventListener('beforeunload', function() {
+        stopAutoRefresh();
+    });
+});
+</script>
+</body>
+</html>

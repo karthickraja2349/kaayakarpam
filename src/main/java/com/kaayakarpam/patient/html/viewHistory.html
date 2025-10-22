@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Patient History</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+
+    /* Main Section */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #34495e;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    #datetime {
+      font-size: 14px;
+      color: #f1c40f;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background: #2c3e50;
+      color: white;
+    }
+
+    table th, table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .status-success {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-cancelled {
+      color: red;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    
+    .hospitalName{
+        color:green;
+        font-weight: thin;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Patient Panel</h2>
+    <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+   <a href="../jsp/patientView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+    <a href="/kaayakarpam/bookAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Book Ambulance</a>
+    <a href="../html/bookScanCenter.html"><i class="fa-solid fa-x-ray"></i> Book Scan Centre</a>
+    <a href="../html/upcomingBookings.html"><i class="fa-solid fa-calendar-check"></i> Upcoming Appointments</a>
+    <a href="../html/viewHistory.html"><i class="fa-solid fa-clock-rotate-left"></i> Patient History</a>
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-id-card"></i> View Profile</a>
+  </nav>
+
+  <!-- Main Section -->
+  <div class="main">
+    <header>
+      <h1>Patient Booking History</h1>
+      <span id="datetime"></span>
+    </header>
+
+    <div class="container">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Hospital Name</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Scan Type</th>
+            <th>Booked Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data will be loaded dynamically -->
+        </tbody>
+      </table>
+      <p class="error" id="error-msg"></p>
+    </div>
+  </div>
+
+  <script>
+    // Show DateTime in Header
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById("datetime").textContent = now.toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // Fetch Patient History
+    async function loadPatientHistory() {
+      const tableBody = document.querySelector("#historyTable tbody");
+      const errorMsg = document.getElementById("error-msg");
+
+      try {
+        const response = await fetch("/kaayakarpam/patientHistory");
+        if (!response.ok) {
+          const err = await response.json();
+          errorMsg.textContent = err.error || "Failed to fetch history.";
+          return;
+        }
+
+        const history = await response.json();
+        tableBody.innerHTML = ""; // Clear old data
+
+        if (history.length === 0) {
+          tableBody.innerHTML = "<tr><td colspan='6'>No history found.</td></tr>";
+          return;
+        }
+
+        history.forEach(item => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${item.hospitalName}</td>
+            <td>${item.hospitalAddress}</td>
+            <td>${item.hospitalPhoneNumber}</td>
+            <td>${item.scanType}</td>
+           <td>${item.bookedDate}</td>  
+            <td class="${item.status === 'Success' ? 'status-success' : 'status-cancelled'}">${item.status}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        errorMsg.textContent = "Error: " + err.message;
+      }
+    }
+
+    // Load history on page load
+    window.onload = loadPatientHistory;
+  </script>
+</body>
+</html>
+

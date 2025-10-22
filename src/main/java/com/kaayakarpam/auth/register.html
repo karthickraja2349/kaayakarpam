@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaayakarpam - Register</title>
+    <style>
+         body {
+              text-align: center;
+              background-color: white;
+              margin-top: 100px;
+              font-family: Arial, sans-serif;
+         }
+         
+         .register-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 350px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+         }
+
+         .register-box h2 {
+            margin-bottom: 20px;
+         }
+
+         .register-box input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+         }
+
+         button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+         }
+
+         button:hover {
+            background-color: #0056b3;
+         }
+
+         .error {
+            color: red;
+            font-size: 14px;
+         }
+    </style>
+</head> 
+
+<body>
+    <div class="register-box">
+        <h2 id="form-title">Register</h2>
+        <form id="register-form">
+
+            <!-- Hidden role field -->
+            <input type="hidden" id="role" name="role">
+
+            <!-- Common fields -->
+            <input type="text" id="name" name="name" placeholder="Enter your Name" required><br>
+            <input type="email" id="email" name="email" placeholder="Enter your Email Address" required><br>
+            <input type="password" id="password" name="password" placeholder="Enter your Password" required><br>
+            <input type="number" id="age" name="age" placeholder="Enter your Age" required><br>
+
+            <p>Select your gender:</p>
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="female">Female</label>
+            <input type="radio" id="other" name="gender" value="other">
+            <label for="other">Other</label><br>
+
+            <input type="text" id="address" name="address" placeholder="Enter your Address" required><br>
+            <input type="text" id="mobileNo" name="mobile_number" placeholder="Enter your Mobile Number" required><br>
+
+            <!-- Staff-only field -->
+            <div id="staff-extra" style="display:none;">
+                <input type="text" id="hospitalPhoneNumber" name="hospitalPhoneNumber" placeholder="Enter Hospital phone Number"><br>
+            </div>
+
+            <p class="error" id="error-msg"></p>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        // Read role from ?role=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get("role");
+        document.getElementById("role").value = role;
+
+        if (role) {
+            document.getElementById("form-title").innerText = "Register as " + role;
+        }
+        if (role === "staff") {
+            document.getElementById("staff-extra").style.display = "block";
+        }
+
+        // Form validation + fetch
+        document.getElementById("register-form").addEventListener("submit", async function(e) {
+            e.preventDefault(); 
+            const errorMsg = document.getElementById("error-msg");
+            errorMsg.textContent = "";
+
+            // Collect form values
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const gender = document.querySelector('input[name="gender"]:checked');
+            const address = document.getElementById("address").value.trim();
+            const mobile = document.getElementById("mobileNo").value.trim();
+            const hospitalPhoneNumber = document.getElementById("hospitalPhoneNumber") ?     document.getElementById("hospitalPhoneNumber").value.trim() : "";
+
+            //  Validation rules
+            if (name.length < 3) {
+                errorMsg.textContent = "Name must be at least 3 characters long";
+                return;
+            }
+            if (!/^[\w.-]+@[\w.-]+\.\w{2,}$/.test(email)) {
+                errorMsg.textContent = "Enter a valid email address";
+                return;
+            }
+            if (password.length < 6) {
+                errorMsg.textContent = "Password must be at least 6 characters";
+                return;
+            }
+            if (isNaN(age) || age < 18 || age > 60) {
+                errorMsg.textContent = "Enter a valid age between 18 and 60";
+                return;
+            }
+            if (!gender) {
+                errorMsg.textContent = "Select your gender";
+                return;
+            }
+            if (!/^\d{10}$/.test(mobile)) {
+                errorMsg.textContent = "Mobile number must be 10 digits";
+                return;
+            }
+                      // Only validate hospital phone number if role is staff
+          if (role === "staff" && !/^\d{10}$/.test(hospitalPhoneNumber)) {
+              errorMsg.textContent = "Hospital Phone Number must be 10 digits";
+              return;
+          }
+
+            // Prepare form data for fetch
+            const formData = new FormData(this);
+
+          try {
+        const response = await fetch("/kaayakarpam/register", {
+            method: "POST",
+            body: formData
+        });
+        const result = await response.text(); 
+
+        if (response.ok) {
+            alert("Registration Successful!\n" + result);
+            this.reset();
+            setTimeout(() => {
+                window.location.href = "/kaayakarpam/index.html";
+            }, 1000);
+        } else {
+            // ✅ Handle specific foreign key error message
+            if (result.includes("staff_ibfk_1")) {
+                errorMsg.textContent = "❌ The selected Hospital Number does not exist. Please check again.";
+            }
+            else if(result.includes("staff.mobile_number")){
+                errorMsg.textContent = "❌ Mobile Number already Exists, please enter a valid mobile Number again.";
+            }
+            else {
+                errorMsg.textContent = "❌ Registration failed: " + result;
+            }
+        }
+    } catch (err) {
+        errorMsg.textContent = "Error: " + err.message;
+    }
+        });
+    </script>
+</body>
+</html>
+

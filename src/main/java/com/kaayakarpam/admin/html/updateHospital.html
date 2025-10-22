@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kaayakarpam - Update Hospital</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+    crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+          body {
+              font-family: Arial, sans-serif;
+              background: #f8f9fa;
+              margin: 0;
+              padding: 0;
+            }
+
+            .update-container {
+                  max-width: 600px;
+                  margin: 40px auto;
+                  padding: 25px;
+                  background: #fff;
+                  border-radius: 12px;
+                  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            }
+
+            h2 {
+                color: #b71c1c;
+                font-size: 18px;
+                margin-bottom: 20px;
+                text-align: center;
+              }
+
+            h3 {
+              color: #333;
+              margin: 15px 0 10px;
+              font-size: 16px;
+            }
+
+            form {
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+            }
+
+            input, textarea {
+              padding: 10px;
+              font-size: 14px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              width: 100%;
+              box-sizing: border-box;
+            }
+
+            textarea {
+              resize: vertical;
+              min-height: 60px;
+            }
+
+            button {
+              background: #1976d2;
+              color: white;
+              padding: 12px;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 15px;
+              transition: background 0.3s ease;
+            }
+
+            button:hover {
+              background: #0d47a1;
+            }
+
+            .coordinates-display {
+              display: flex;
+              gap: 15px;
+            }
+
+            .input-group {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+            }
+
+            #map-container {
+              margin: 10px 0;
+              border: 2px solid #ccc;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+
+            #map {
+              height: 300px;
+              width: 100%;
+            }
+
+            .map-instructions {
+              text-align: center;
+              font-size: 13px;
+              color: #555;
+              padding: 5px;
+              background: #f1f1f1;
+            }
+
+            #error-msg {
+              color: #d32f2f;
+              margin-top: 10px;
+              font-weight: bold;
+              text-align: center;
+            }
+
+            #output {
+              margin-top: 10px;
+              padding: 10px;
+              background: #e8f5e9;
+              color: #2e7d32;
+              border-radius: 6px;
+              text-align: center;
+            }
+
+  </style>
+</head>  
+<body>
+
+        
+         <div class = "update-container">
+               <h2>⚠️ Admin, please confirm before submitting. This action cannot be undone!</h2>
+               <form id = "update-form">
+                      <input type = "number" id = "hospitalId" name = "hospitalId" placeholder = "Enter the Hospital Id" required>
+                      <hr>
+                      <h3>you can Update Any of the Details given below</h3>
+                      <input type = "text" id = "hospitalName" name = "hospitalName" placeholder = "Enter the Hospital Name" >
+                      <textarea id = "hospitalAddress" name = "hospitalAddress" placeholder = "Enter the Hospital Address" ></textarea>
+                       <input type = "text" id = "location" name = "location" placeholder = "Enter the Hospital Location" >
+                       
+                      <div class="form-group map-area">
+                           <label><i class="fas fa-map"></i> Confirm Location on Map</label>
+                           <div id="map-container">
+                                <div id="map"></div>
+                                <div class="map-instructions">
+                                    Click on the map to set the exact location
+                                </div>
+                           </div>
+                     </div>
+                      
+                       <div class="coordinates-display">
+                              <div class="input-group">
+                                  <label for="latitude">Latitude</label>
+                                  <input type="text" id="latitude" name="latitude" readonly placeholder="Click on the map">
+                              </div>
+            
+                            <div class="input-group">
+                                <label for="longitude">Longitude</label>
+                                <input type="text" id="longitude" name="longitude" readonly placeholder="Click on the map">
+                            </div>
+                   </div>
+                   
+                   <input type = "text" id = "hospitalPhoneNumber"  name = "hospitalPhoneNumber" placeholder = "Enter Hospital Phone Number">
+                   <hr>
+                   <input type = "number" id = "totalBeds" class = "totalBeds" placeholder = "Enter total bed count" min = "1">
+                   <input type = "number" id = "freeBeds" class = "freeBeds" placeholder = "Enter total Free bed count" min = "1">  
+                   <input type = "number" id = "labCount" class = "labCount" placeholder = "Enter the lab count" min = "1">
+                   <input type = "number" id = "icuCount" class = "icuCount" placeholder = "Enter the icu count" min = "1">
+                   <input type = "number" id = "ambulanceCount" class = "ambulanceCount" placeholder = "Enter the ambulance Count " min = "1">
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Submit</button>
+               </form>
+                <div id="output"></div>
+                <p class="error" id="error-msg"></p>
+         </div>
+         
+         <script>
+         
+                    const map = L.map('map').setView([9.9252, 78.1198], 8); 
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+                    
+                     let marker = L.marker([9.9252, 78.1198], {
+                          draggable: true
+                      }).addTo(map);
+                      
+                     function updateCoordinates(lat, lng) {
+                          document.getElementById('latitude').value = lat.toFixed(6);
+                          document.getElementById('longitude').value = lng.toFixed(6);
+                      }
+                      
+                
+                      marker.on('dragend', function(event) {
+                          const position = marker.getLatLng();
+                          updateCoordinates(position.lat, position.lng);
+                      });
+      
+                        map.on('click', function(event) {
+                            const {lat, lng} = event.latlng;
+                            marker.setLatLng([lat, lng]);
+                            updateCoordinates(lat, lng);
+                        });
+                        
+                        
+                                      
+        
+                  document.getElementById("update-form").addEventListener("submit", async function(e) {
+                        e.preventDefault();
+                        const errorMessage = document.getElementById("error-msg");
+                        const output = document.getElementById("output");
+                        errorMessage.textContent = "";
+                        output.textContent = "";
+                        
+                        const hospitalId = document.getElementById("hospitalId").value;
+                        const hospitalName = document.getElementById("hospitalName").value.trim();
+                        const hospitalAddress = document.getElementById("hospitalAddress").value.trim();
+                        const location = document.getElementById("location").value.trim();
+                        const latitude = document.getElementById("latitude").value.trim();
+                        const longitude = document.getElementById("longitude").value.trim();
+                        const hospitalPhoneNumber = document.getElementById("hospitalPhoneNumber").value.trim();
+                        const totalBeds = document.getElementById("totalBeds").value;
+                        const freeBeds = document.getElementById("freeBeds").value;
+                        const labCount = document.getElementById("labCount").value;
+                        const icuCount = document.getElementById("icuCount").value;
+                        const ambulanceCount = document.getElementById("ambulanceCount").value;
+                        
+                        if(hospitalName){
+                            if(hospitalName.length < 3){
+                                errorMessage.textContent = "Name must be at least 3 characters long";
+                                return;
+                            }
+                          const namePattern = /^[A-Za-z\s]+$/;
+                          if (!namePattern.test(hospitalName)) {
+                             errorMessage.textContent = "Hospital name must contain only alphabets and spaces";
+                              return;
+                          } 
+                       } 
+                        
+                        if(hospitalAddress && hospitalAddress.length < 8){
+                            errorMessage.textContent = "Address must be at least 8 characters long. So please enter a Valid Address";
+                            return;
+                       }
+                       
+                       const numberPattern = /^\d{10}$/;
+                      if (hospitalPhoneNumber && !numberPattern.test(hospitalPhoneNumber)) {
+                        errorMessage.textContent = "Mobile number must be exactly 10 digits";
+                        return;
+                      }
+                      
+                      if(freeBeds > totalBeds){
+                           errorMessage.textContent = "Free Beds Cannot be More than total available beds";
+                           return;
+                      }
+                      
+                      const data = {
+                            hospitalId : hospitalId,
+                            hospitalName : hospitalName, 
+                            hospitalAddress : hospitalAddress,
+                            location : location, 
+                            latitude : latitude, 
+                            longitude : longitude, 
+                            hospitalPhoneNumber : hospitalPhoneNumber, 
+                            totalBeds : totalBeds,
+                            freeBeds : freeBeds, 
+                            labCount : labCount,
+                            icuCount : icuCount,
+                            ambulanceCount : ambulanceCount
+                      };
+                      
+                      console.log("Sending JSON:", data);
+                      try{
+                          const response = await fetch("/kaayakarpam/hospitalUpdate",{
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json"
+                              },
+                              body: JSON.stringify(data)
+                          });
+                          
+                          if(response.ok){
+                              const result = await response.json();
+                              if (result.error) 
+                                errorMessage.textContent = result.error;
+                             else if (result.success) 
+                               output.textContent = result.success;   
+                             else 
+                              output.textContent = "Hospital Updated successfully.";  
+                          }
+                          else 
+        
+                           errorMessage.textContent = result.error || "Something went wrong!";
+                      }
+                      catch(err){
+                          // const errorData = await response.json();
+                          if(err.message == "result is not defined")
+                             errorMessage.textContent = "Mobile Number already Exists";
+                          //errorMessage.textContent = err.message;   
+                      }
+                  });
+         </script>
+</body>
+</html>

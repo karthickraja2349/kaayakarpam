@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - InPatientView</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7f9;
+      color: #333;
+      line-height: 1.6;
+      display: flex; /*  Sidebar + content aligned */
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+      nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+      margin-top:15px;
+      margin-left : 20px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 6px 0; /* Reduced from 12px to 6px */
+    padding: 8px 12px; /* Reduced padding from 10px to 8px */
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #header {
+      background: linear-gradient(135deg, #0066cc 0%, #003366 100%);
+      color: white;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    #header h1 {
+      margin-bottom: 10px;
+      font-size: 2.2rem;
+    }
+
+    #header p {
+      font-style: italic;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    .card-title {
+      font-size: 1.6rem;
+      color: #0066cc;
+    }
+
+    .refresh-btn {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 500;
+    }
+
+    .refresh-btn:hover {
+      background-color: #0055aa;
+    }
+
+    /* Table */
+    .patients-table {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      min-width: 900px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #495057;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .edit-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .edit-btn:hover {
+      background-color: #218838;
+    }
+
+    .no-requests {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+
+    /* Messages */
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .search-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .search-container {
+        flex-direction: column;
+      }
+    }
+    
+    /* Session expired modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  color: #e74c3c;
+  margin-top: 0;
+}
+
+.modal-content p {
+  margin: 15px 0;
+  color: #555;
+}
+
+.modal-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.modal-button:hover {
+  background-color: #2980b9;
+}
+  </style>
+</head>
+<body>
+  <nav>
+    <h2><i class="fa-solid fa-user-shield"></i> Staff Panel</h2>
+     <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <a href="../jsp/staffView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+    <a href="../html/viewInPatients.html"><i class="fa-solid fa-bed"></i> View InPatients</a>
+    <a href="../html/viewHospitalDetails.html"><i class="fa-solid fa-hospital"></i> Hospital Details</a>
+    <a href="../html/viewScanAppointments.html"><i class="fa fa-calendar" aria-hidden="true"></i> Today Scan Appointments </a>
+    <a href="../html/viewUpcomingScanAppointments.html"><i class="fas fa-hourglass"></i> Upcoming Scan Appointments </a>
+    <a href="../html/scanAppointmentsHistory.html"><i class="fas fa-hourglass-end"></i> Scan Appointments History</a>
+    <a href="../html/patientManagement.html"><i class="fa-solid fa-file-medical"></i> Patient Requests</a>
+    <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+  </nav>
+
+  <div class="main">
+    <div id="header">
+      <h1>Patient Management</h1>
+      <p>Good Care Heals Patient Faster than the Medicine</p>
+  <!--    <button class="logout-btn" onclick="logout()">Logout</button> -->
+    </div>
+
+    <div class="container">
+      <div class="error-message" id="error-message"></div>
+      <div class="success-message" id="success-message"></div>
+
+      <div class="card">
+        <div class="card-header"> 
+          <h2 class="card-title">InPatients List</h2>
+          <button class="refresh-btn" onclick="loadInPatients()">Refresh</button>
+        </div>
+
+        <div class="search-container">
+          <input type="text" id="search-input" class="search-input" placeholder="Search patients by name, ID, or condition...">
+          <button class="search-btn" onclick="filterPatients()">Search</button>
+        </div>
+
+        <div class="patients-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Patient Name</th>
+                <th>Aadhar Number</th>
+                <th>Condition</th>
+                <th>Reason for Admittance</th>
+                <th>Admission Date</th>
+                <th>Room No</th>
+                <th>Discharge Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="requests-body"></tbody>
+          </table>
+        </div>
+
+        <div id="no-requests" class="no-requests" style="display: none;">
+          <p>No patients admitted at this time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline Edit Modal -->  
+  <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px; width: 80%; max-width: 500px;">
+      <h2>Edit Patient Details</h2>
+      <form id="editPatientForm">
+        <input type="hidden" id="editPatientId" name="patientId" value="">
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editPatientName">Patient Name</label>
+          <input type="text" id="editPatientName" name="patientName" placeholder="Enter Patient Name" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editPatientAadharNumber">Aadhar Number</label>
+          <input type="text" id="editPatientAadharNumber" name="patientAadharNumber" placeholder="Enter patient Aadhar Number" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editCondition">Select Patient Current Condition</label>
+          <select name="patientCondition" id="editCondition" style="width: 100%; padding: 8px; margin-top: 5px;">
+            <option value="">-- Select condition --</option>
+            <option value="critical">CRITICAL</option>
+            <option value="normal">NORMAL</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editReason">Reason For Admittance</label>
+          <input type="text" id="editReason" name="reason" placeholder="Enter the reason for patient Admittance" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editRoomNumber">Room Number</label>
+          <input type="text" id="editRoomNumber" name="roomNumber" placeholder="Enter the Room Number" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="editDischargeDate">Discharge Date</label>
+          <input type="date" id="editDischargeDate" name="dischargeDate" min="" placeholder="Enter the discharge date of the patient" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+          <button type="button" onclick="closeEditModal()" style="padding: 10px 15px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+          <button type="submit" style="padding: 10px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Session Expired Modal -->
+<div class="modal" id="sessionExpiredModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-exclamation-triangle"></i> Session Expired</h2>
+    <p>Your session has expired due to inactivity. You will be redirected to the login page.</p>
+    <button class="modal-button" onclick="redirectToLogin()">OK</button>
+  </div>
+</div>
+
+  <script>
+    // Global variables
+    let allPatients = [];
+    const editModal = document.getElementById('editModal');
+    
+    async function loadInPatients() {
+      try {
+        showMessage('Loading patient data...', 'success');
+        
+        const response = await fetch('/kaayakarpam/inPatientDetails', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const patients = await response.json();
+          allPatients = patients;
+          displayPatients(patients);
+          hideMessage();
+        } 
+        else {
+          showMessage('Failed to load patient data', 'error');
+        }
+      } catch (error) {
+        showMessage('Network error: ' + error.message, 'error');
+      }
+    }
+    
+    function displayPatients(patients) {
+      const requestsBody = document.getElementById('requests-body');
+      const noRequests = document.getElementById('no-requests');
+      const patientsTable = document.querySelector('.patients-table');
+      
+      requestsBody.innerHTML = '';
+      
+      if (patients.length === 0) {
+        patientsTable.style.display = 'none';
+        noRequests.style.display = 'block';
+        return;
+      }
+      
+      patientsTable.style.display = 'block';
+      noRequests.style.display = 'none';
+      
+      patients.forEach(patient => {
+         const row = document.createElement('tr');
+        
+        // Format dates
+        const admissionDate = patient.admission_date ? new Date(patient.admission_date).toLocaleDateString() : 'N/A';
+        const dischargeDate = patient.discharge_date ? new Date(patient.discharge_date).toLocaleDateString() : 'Not discharged';
+        
+        const isDischarged = patient.discharge_date && new Date(patient.discharge_date) < new Date();
+        const isEditDisabled = isDischarged ? 'disabled' : '';
+        const buttonTitle = isDischarged ? 'Cannot edit discharged patients' : 'Edit patient details';
+        
+        row.innerHTML = `
+          <td>${patient.patient_id || 'N/A'}</td>
+          <td>${patient.patient_name || 'N/A'}</td>
+          <td>${patient.aadhar_number || 'N/A'}</td>
+          <td>${patient.condition || 'N/A'}</td>
+          <td>${patient.reason_for_admittance || 'N/A'}</td>
+          <td>${admissionDate}</td>
+          <td>${patient.room_no || 'N/A'}</td>
+          <td>${dischargeDate}</td>
+          <td>
+            <button class="edit-btn" onclick="openEditModal(${patient.patient_id})" ${isEditDisabled} title="${buttonTitle}">
+              Edit
+            </button>
+          </td>
+        `;
+        
+         if (isDischarged) {
+              row.querySelector('.edit-btn').style.opacity = '0.6';
+              row.querySelector('.edit-btn').style.cursor = 'not-allowed';
+        }
+                
+        requestsBody.appendChild(row);
+      });
+    }
+    
+    // Filter patients based on search input
+    function filterPatients() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      
+      if (!searchTerm) {
+        displayPatients(allPatients);
+        return;
+      }
+      
+      const filteredPatients = allPatients.filter(patient => {
+        return (
+          (patient.patient_id && patient.patient_id.toString().includes(searchTerm)) ||
+          (patient.patient_name && patient.patient_name.toLowerCase().includes(searchTerm)) ||
+          (patient.aadhar_number && patient.aadhar_number.includes(searchTerm)) ||
+          (patient.condition && patient.condition.toLowerCase().includes(searchTerm)) ||
+          (patient.reason_for_admittance && patient.reason_for_admittance.toLowerCase().includes(searchTerm)) ||
+          (patient.room_no && patient.room_no.toString().includes(searchTerm))
+        );
+      });
+      
+      displayPatients(filteredPatients);
+    }
+    
+    
+    function openEditModal(patientId) {
+            const patient = allPatients.find(p => p.patient_id === patientId);
+            
+            if (patient.discharge_date && new Date(patient.discharge_date) < new Date()) {
+              showMessage('Cannot edit discharged patients', 'error');
+              return;
+            }
+
+            document.getElementById('editPatientId').value = patient.patient_id;
+            document.getElementById('editPatientName').value = patient.patient_name || '';
+            document.getElementById('editPatientAadharNumber').value = patient.aadhar_number || '';
+            document.getElementById('editCondition').value = patient.condition || '';
+            document.getElementById('editReason').value = patient.reason_for_admittance || '';
+            document.getElementById('editRoomNumber').value = patient.room_no || '';
+            
+            if (patient.discharge_date) {
+              const dischargeDate = new Date(patient.discharge_date);
+              document.getElementById('editDischargeDate').value = dischargeDate.toISOString().split('T')[0];
+            } 
+            else {
+              document.getElementById('editDischargeDate').value = '';
+            }
+            
+            // Set min date for discharge date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('editDischargeDate').min = today;
+            
+            // Show the modal
+            document.getElementById('editModal').style.display = 'block';
+          }
+    
+    // Open edit modal with patient data
+    /*function openEditModal(patientId) {
+      const patient = allPatients.find(p => p.patient_id === patientId);
+      
+      if (!patient) {
+        showMessage('Patient not found', 'error');
+        return;
+      }
+      
+      // Populate form fields
+      document.getElementById('editPatientId').value = patient.patient_id || '';
+      document.getElementById('editPatientName').value = patient.patient_name || '';
+      document.getElementById('editPatientAadharNumber').value = patient.aadhar_number || '';
+      document.getElementById('editCondition').value = patient.condition ? patient.condition.toLowerCase() : '';
+      document.getElementById('editReason').value = patient.reason_for_admittance || '';
+      document.getElementById('editRoomNumber').value = patient.room_no || '';
+      
+      // Set discharge date if exists
+      if (patient.discharge_date) {
+        const dischargeDate = new Date(patient.discharge_date);
+        document.getElementById('editDischargeDate').value = dischargeDate.toISOString().split('T')[0];
+      } else {
+        document.getElementById('editDischargeDate').value = '';
+      }
+      
+      // Set min date for discharge date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('editDischargeDate').min = today;
+      
+      // Show modal
+      editModal.style.display = 'block';
+    }*/
+    
+    // Close edit modal
+    function closeEditModal() {
+      editModal.style.display = 'none';
+    }
+    
+    // Handle form submission for editing
+    document.getElementById('editPatientForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const patientId = document.getElementById('editPatientId').value;
+      const data = {
+        patientId: patientId,
+        patientName: document.getElementById('editPatientName').value,
+        patientAadharNumber: document.getElementById('editPatientAadharNumber').value,
+        patientCondition: document.getElementById('editCondition').value,
+        reason: document.getElementById('editReason').value,
+        roomNumber: document.getElementById('editRoomNumber').value,
+        dischargeDate: document.getElementById('editDischargeDate').value
+      };
+      
+      try {
+        const response = await fetch('/kaayakarpam/inpatientEdit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+          const result = await response.text();
+          showMessage('Patient details updated successfully', 'success');
+          closeEditModal();
+          loadInPatients(); // Refresh the list
+        } else {
+          showMessage('Failed to update patient details', 'error');
+        }
+      } catch (error) {
+        showMessage('Network error: ' + error.message, 'error');
+      }
+    });
+    
+    function showMessage(message, type) {
+      const messageDiv = document.getElementById(`${type}-message`);
+      messageDiv.textContent = message;
+      messageDiv.style.display = 'block';
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          messageDiv.style.display = 'none';
+        }, 3000);
+      }
+    }
+    
+    function hideMessage() {
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('success-message').style.display = 'none';
+    }
+    
+    // Initialize the page
+    window.onload = function() {
+      loadInPatients();
+      
+      // Add event listener for Enter key in search
+      document.getElementById('search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          filterPatients();
+        }
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(e) {
+        if (e.target === editModal) {
+          closeEditModal();
+        }
+      });
+    };
+  </script>
+</body>
+</html>

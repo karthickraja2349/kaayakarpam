@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaayakarpam - Add Ambulance</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+    crossorigin=""/>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 6px 6px;
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+   
+        nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+
+    /* Main Section */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .header {
+      background: #0077cc;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color : green;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    #map-container {
+      margin-top: 10px;
+    }
+
+    #map {
+      height: 300px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .map-instructions {
+      font-size: 0.9rem;
+      margin-top: 8px;
+      color: #555;
+    }
+
+    button {
+      background: #0077cc;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    #output {
+      margin-top: 15px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    #output.success {
+      color: green;
+    }
+
+    #output.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav>
+        <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+        <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+        <a href="../jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+      <!--  <a href="../html/addHospital.html"><i class="fa-solid fa-hospital"></i> Add Hospital</a>
+        <a href="../html/hospitalDelete.html"><i class="fa-solid fa-trash"></i> Delete Hospital</a> -->
+        <a href="../html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i> Manage Hospitals</a>
+     <!--   <a href="../html/addScanCentres.html"><i class="fa-solid fa-microscope"></i> Add Scan Centres</a> -->
+        <a href="../html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+      <!--   <a href="../html/addAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Add Ambulance</a> -->
+       <a href="../html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a> 
+        <a href="../../common/web/html/viewProfile.html"><i class="fa-solid fa-user"></i> View Profile</a>
+  </nav>
+
+  <!-- Main Section -->
+  <div class="main">
+    <div class="header">
+      <h2>🚑 Ambulance saves Humanity</h2>
+    </div>
+
+    <form id="ambulance-form">
+      <div class="input-group">
+        <label for="hospitalId">Hospital Id</label>
+        <input type="number" id="hospitalId" name="hospitalId" placeholder="Enter Hospital Id" min="1" required>
+      </div>
+
+      <div class="input-group">
+        <label for="ambulanceNumber">Ambulance Number</label>
+        <input type="text" id="ambulanceNumber" name="ambulanceNumber" placeholder="Enter Ambulance Number" required>
+      </div>
+
+      <div class="input-group">
+        <label for="ambulanceLocation">Ambulance Location</label>
+        <input type="text" id="ambulanceLocation" name="ambulanceLocation" placeholder="Enter Ambulance Location" required>
+      </div>
+
+      <div class="input-group">
+        <label>Select Ambulance Location on Map</label>
+        <div id="map-container">
+          <div id="map"></div>
+          <div class="map-instructions">Click on the map to set the Ambulance location</div>
+        </div>
+      </div>
+
+      <div class="coordinates-display">
+        <div class="input-group">
+          <label for="latitude">Latitude</label>
+          <input type="text" id="latitude" name="latitude" readonly placeholder="Click on the map">
+        </div>
+        <div class="input-group">
+          <label for="longitude">Longitude</label>
+          <input type="text" id="longitude" name="longitude" readonly placeholder="Click on the map">
+        </div>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="output"></div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+    crossorigin=""></script>
+
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([9.9252, 78.1198], 8); // Center Madurai
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    let marker;
+
+    // Click to set marker
+    map.on("click", function (e) {
+      const { lat, lng } = e.latlng;
+
+      if (marker) map.removeLayer(marker);
+      marker = L.marker([lat, lng]).addTo(map);
+
+      document.getElementById("latitude").value = lat.toFixed(6);
+      document.getElementById("longitude").value = lng.toFixed(6);
+    });
+
+    // Form submission
+    document.getElementById("ambulance-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const hospitalId = document.getElementById("hospitalId").value.trim();
+      const ambulanceNumber = document.getElementById("ambulanceNumber").value.trim();
+      const ambulanceLocation = document.getElementById("ambulanceLocation").value.trim();
+      const latitude = document.getElementById("latitude").value.trim();
+      const longitude = document.getElementById("longitude").value.trim();
+      const output = document.getElementById("output");
+
+      output.textContent = "";
+      output.className = "";
+      
+
+      // Validation
+       
+      const numberPattern = /^[A-Z]{2}\d{1,2}[A-Z]{1,2}\d{4}$/;
+      const locationPattern = /^[A-Za-z\s,.-]{3,50}$/; 
+      
+      if (!numberPattern.test(ambulanceNumber)) {
+          alert("❌ Invalid Ambulance Number. Required Format: TN59AB1234");
+          return;
+     } 
+     if (!locationPattern.test(ambulanceLocation)) {
+         alert("❌ Invalid Location. Only letters and spaces allowed (min 3 chars).");
+         return;
+     }
+      
+      if (!hospitalId || !ambulanceNumber || !ambulanceLocation || !latitude || !longitude) {
+        output.textContent = "⚠️ Please fill all fields and select a location on the map.";
+        output.className = "error";
+        return;
+      }
+      
+      
+
+   try {
+  const response = await fetch("/kaayakarpam/ambulanceAdder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ hospitalId, ambulanceNumber, ambulanceLocation, latitude, longitude })
+  });
+
+  const result = await response.json();
+
+  if (response.ok && result.status === "success") {
+    output.textContent = "✅ " + result.message;
+    output.className = "success";
+    document.getElementById("ambulance-form").reset();
+    if (marker) {
+      map.removeLayer(marker);
+      marker = null;
+    }
+  } else if (result.error) {
+    // Handle duplicate error or other server errors
+    if (result.error.includes("Duplicate entry") || result.error.includes("ambulance.vehicle_number'")) {
+      output.textContent = "❌ Ambulance number already exists. Please use a different number.";
+    } 
+    else if(result.error.includes("FOREIGN KEY (`hospital_id`)")){
+      output.textContent = "❌ There is No Hospital Present in this provided Hospital Id.";
+    }
+    else {
+      output.textContent = "⚠️ " + result.error;
+    }
+    output.className = "error";
+  } else {
+    output.textContent = "❌ " + (result.message || "Something went wrong.");
+    output.className = "error";
+  }
+} catch (err) {
+  output.textContent = "⚠️ Error: " + err.message;
+  output.className = "error";
+}
+
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .main-container {
+      display: flex;
+      width: 100%;
+    }
+
+    /* Sidebar */
+       nav {
+      width: 240px;
+      background-color: #2c3e50;
+      padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      color: #ecf0f1;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+      margin-top : 20px;
+      margin-left:15px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    nav a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #1abc9c;
+      color: #fff;
+    }
+    /* Content area */
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .profile-content {
+      padding: 20px;
+    }
+
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #f1f1f1;
+      padding-bottom: 15px;
+    }
+
+    .profile-header h2 {
+      color: #4CAF50;
+      font-size: 24px;
+    }
+
+    .edit-btn, .reset-password-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-btn:hover, .reset-password-btn:hover {
+      background: #388E3C;
+    }
+
+    .reset-password-btn {
+      background: #FF9800;
+    }
+
+    .reset-password-btn:hover {
+      background: #F57C00;
+    }
+
+    .detail-row {
+      display: flex;
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      align-items: center;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      min-width: 120px;
+      color: #555;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: #333;
+    }
+
+    input[type="text"], input[type="email"], input[type="number"], input[type="password"], input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .save-btn {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      display: none;
+    }
+
+    .save-btn:hover {
+      background: #0b7dda;
+    }
+
+    .cancel-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      display: none;
+    }
+
+    .cancel-btn:hover {
+      background: #d32f2f;
+    }
+
+    .success-message {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    /* Password reset form */
+    .password-reset-form {
+      display: none;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+    }
+
+    .password-reset-form h3 {
+      margin-bottom: 15px;
+      color: #FF9800;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: green;
+    }
+
+    .password-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .submit-password-btn {
+      background: #FF9800;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .submit-password-btn:hover {
+      background: #F57C00;
+    }
+
+    .cancel-password-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .cancel-password-btn:hover {
+      background: red;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+      nav {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+  
+    <nav id="roleNav"></nav>
+
+
+    <div class="content-area">
+      <div class="container">
+        <header>
+          <h1><i class="fas fa-user-circle"></i> User Profile</h1>
+          <p>View and manage your profile information</p>
+        </header>
+
+        <div class="profile-content">
+          <div class="success-message" id="successMessage">Profile updated successfully!</div>
+
+          <div class="profile-header">
+            <h2 id="profileType">Profile Details</h2>
+            <div style="display: flex; gap: 10px;">
+              <button class="edit-btn" id="editBtn"><i class="fas fa-edit"></i> Edit Profile</button>
+              <button class="reset-password-btn" id="resetPasswordBtn"><i class="fas fa-key"></i> Reset Password</button>
+            </div>
+          </div>
+
+          <div class="loading" id="loading"><i class="fas fa-spinner fa-spin"></i> Loading profile information...</div>
+          <div class="error" id="error" style="display:none;">Error loading profile.</div>
+          <div class="profile-details" id="profileDetails" style="display:none;"></div>
+
+          <!-- Password Reset Form -->
+          <div class="password-reset-form" id="passwordResetForm">
+            <h3><i class="fas fa-key"></i> Reset Password</h3>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="email" readOnly></div>
+            <div class="form-group"><label for="currentPassword">Current Password</label><input type="password" id="currentPassword"></div>
+            <div class="form-group"><label for="newPassword">New Password</label><input type="password" id="newPassword"></div>
+            <div class="form-group"><label for="confirmPassword">Confirm New Password</label><input type="password" id="confirmPassword"></div>
+            <div class="password-actions">
+              <button class="cancel-password-btn" id="cancelPasswordBtn"><i class="fas fa-times"></i> Cancel</button>
+              <button class="submit-password-btn" id="submitPasswordBtn"><i class="fas fa-check"></i> Submit</button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="cancel-btn" id="cancelBtn"><i class="fas fa-times"></i> Cancel</button>
+            <button class="save-btn" id="saveBtn"><i class="fas fa-save"></i> Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editBtn = document.getElementById('editBtn');
+            const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+            const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+            const passwordResetForm = document.getElementById('passwordResetForm');
+           
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const profileDetailsEl = document.getElementById('profileDetails');
+            const successMessageEl = document.getElementById('successMessage');
+            
+            let profileData = {};
+            let isEditing = false;
+            let isResettingPassword = false;
+            let userId = null; // We'll get this from the session
+            
+            // Fetch profile data from servlet
+            fetch('/kaayakarpam/manualProfile')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Parse the HTML response to extract profile data
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const preElement = doc.querySelector('pre');
+                    
+                    if (preElement) {
+                        const text = preElement.textContent;
+                        parseProfileText(text);
+                        renderProfileDetails();
+                        
+                        loadingEl.style.display = 'none';
+                        profileDetailsEl.style.display = 'block';
+                    } else {
+                        throw new Error('Profile data not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingEl.style.display = 'none';
+                    errorEl.style.display = 'block';
+                    errorEl.textContent = 'Error loading profile: ' + error.message;
+                });
+            
+            function parseProfileText(text) {
+                const lines = text.split('\n');
+                const profileType = lines[0].trim();
+                document.getElementById('profileType').textContent = profileType.replace(/-/g, ' ');
+                
+                profileData = {fields: {}};
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line) {
+                        const separatorIndex = line.indexOf(':');
+                        if (separatorIndex !== -1) {
+                            const fieldName = line.substring(0, separatorIndex).trim();
+                            const fieldValue = line.substring(separatorIndex + 1).trim();
+                            profileData.fields[fieldName] = fieldValue;
+                        }
+                    }
+                }
+
+               document.getElementById('profileType').textContent = profileType.replace(/-/g, ' ');
+
+              if (profileType.toLowerCase().includes('admin')) {
+                  const adminNavHtml = `
+                      <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+                      <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+                      <a href="../../../admin/jsp/adminView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+                  <!--    <a href="../../../admin/html/addHospital.html"><i class="fa-solid fa-hospital"></i> Add Hospital</a> 
+                      <a href="../../../admin/html/hospitalDelete.html"><i class="fa-solid fa-trash"></i> Delete Hospital</a> -->
+                      <a href="../../../admin/html/viewHospitals.html"><i class="fa fa-hospital" aria-hidden="true"></i> Manage Hospitals</a>
+                  <!--    <a href="../../../admin/html/addScanCentres.html"><i class="fa-solid fa-microscope"></i> Add Scan Centres</a> -->
+                      <a href="../../../admin/html/deleteScanCentres.html"><i class="fa-solid fa-microscope"></i> Manage Scan Centres</a>
+               <!--       <a href="../../../admin/html/addAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Add Ambulance</a> -->
+                      <a href="../../../admin/html/deleteAmbulance.html"><i class="fa fa-ambulance" aria-hidden="true"></i> Manage Ambulances</a>
+                      <a href="#"><i class="fa-solid fa-user"></i> View Profile</a>
+                  `;
+                  document.getElementById('roleNav').innerHTML = adminNavHtml;
+              }
+              
+              if (profileType.toLowerCase().includes('staff')) {
+                  const staffNavHtml = `
+                      <h2><i class="fa-solid fa-user-shield"></i> Staff Panel</h2>
+                       <a href="/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+                       <a href="../../../staff/jsp/staffView.jsp"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+                      <a href="../../../staff/html/viewInPatients.html"><i class="fa-solid fa-bed"></i> View InPatients</a>
+                      <a href="../../../staff/html/viewHospitalDetails.html"><i class="fa-solid fa-hospital"></i> Hospital Details</a>
+                      <a href="../../../staff/html/viewScanAppointments.html"><i class="fa fa-calendar" aria-hidden="true"></i> Today Scan Appointments </a>
+                      <a href="../../../staff/html/viewUpcomingScanAppointments.html"><i class="fas fa-hourglass"></i> Upcoming Scan Appointments </a>
+                       <a href="../../../staff/html/scanAppointmentsHistory.html"><i class="fas fa-hourglass-end"></i> Scan Appointments History</a>
+                      <a href="../../../staff/html/patientManagement.html"><i class="fa-solid fa-file-medical"></i> Patient Requests</a>
+                      <a href="#"><i class="fa-solid fa-user"></i> View Profile</a>
+                  `;
+                  document.getElementById('roleNav').innerHTML = staffNavHtml;
+              }
+              
+              if (profileType.toLowerCase().includes('user')) {
+                  const patientNavHtml = `
+                      <h2><i class="fa-solid fa-user-shield"></i> Patient Panel</h2>
+                      <a href="http://localhost:8080/kaayakarpam/index.html"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+                     <a href="http://localhost:9090/index.action"><i class="fa fa-clipboard" aria-hidden="true"></i> DashBoard</a>
+                     <a href="http://localhost:8080/kaayakarpam/bookAmbulance.html"><i class="fa-solid fa-truck-medical"></i> Book Ambulance</a>
+                    <a href="http://localhost:9090/scanBooking.action"><i class="fa-solid fa-x-ray"></i> Book Scan Centre</a>
+                    <a href="http://localhost:9090/upcomingBookings.action"><i class="fa-solid fa-id-card"></i> Upcoming Appointments</a>
+                    <a href="http://localhost:9090/viewHistory.action"><i class="fa-solid fa-clock-rotate-left"></i> Patient History</a>
+                     <a href="http://localhost:8080/kaayakarpam/src/main/java/com/kaayakarpam/common/web/html/viewProfile.html"><i class="fa-solid fa-id-card"></i> View Profile</a>
+                  `;
+                  document.getElementById('roleNav').innerHTML = patientNavHtml;
+              }
+              
+              
+            }
+            
+            function renderProfileDetails() {
+                let html = '';
+                
+                for (const [fieldName, fieldValue] of Object.entries(profileData.fields)) {
+                    html += `
+                        <div class="detail-row">
+                            <div class="detail-label">${fieldName}:</div>
+                            <div class="detail-value" data-field="${fieldName}">${fieldValue}</div>
+                        </div>
+                    `;
+                }
+                
+                profileDetailsEl.innerHTML = html;
+            }
+            
+            function enableEditing() {
+                isEditing = true;
+                isResettingPassword = false;
+                passwordResetForm.style.display = 'none';
+                
+                const detailValues = profileDetailsEl.querySelectorAll('.detail-value');
+                detailValues.forEach(el => {
+                    const fieldName = el.getAttribute('data-field');
+                    const currentValue = el.textContent;
+                    
+                    // Skip fields that shouldn't be edited
+                    if (fieldName === 'Email' || fieldName === 'Age') {
+                        return; // Skip making email and age editable
+                    }
+                    
+                    let inputType = 'text';
+                    if (fieldName === 'Mobile') {
+                        inputType = 'tel';
+                    }
+                    
+                    el.innerHTML = `<input type="${inputType}" value="${currentValue}" data-field="${fieldName}">`;
+                });
+                
+                editBtn.style.display = 'none';
+                resetPasswordBtn.style.display = 'none';
+                cancelBtn.style.display = 'block';
+                saveBtn.style.display = 'block';
+            }
+            
+            function showPasswordResetForm() {
+                isResettingPassword = true;
+                isEditing = false;
+                
+                // Hide edit mode UI
+                cancelEditing();
+                
+                // Show password reset form
+                passwordResetForm.style.display = 'block';
+                editBtn.style.display = 'none';
+                resetPasswordBtn.style.display = 'none';
+                
+                // Pre-fill email if available
+                const emailField = Object.entries(profileData.fields).find(([key]) => 
+                    key.toLowerCase().includes('email') || key.toLowerCase().includes('mail')
+                );
+                
+                if (emailField) {
+                    document.getElementById('email').value = emailField[1];
+                }
+            }
+            
+            function hidePasswordResetForm() {
+                isResettingPassword = false;
+                passwordResetForm.style.display = 'none';
+                editBtn.style.display = 'block';
+                resetPasswordBtn.style.display = 'block';
+                
+                // Clear form fields
+                document.getElementById('email').value = '';
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }
+            
+            function cancelEditing() {
+                isEditing = false;
+                renderProfileDetails();
+                
+                editBtn.style.display = 'block';
+                resetPasswordBtn.style.display = 'block';
+                cancelBtn.style.display = 'none';
+                saveBtn.style.display = 'none';
+            }
+            
+            function validateMobileNumber(mobile) {
+                const mobileRegex = /^\d{10}$/;
+                return mobileRegex.test(mobile);
+            }
+            
+            function validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            function validatePassword(password) {
+                // At least 8 characters, one uppercase, one lowercase, one number
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                return passwordRegex.test(password);
+            }
+            
+            function saveChanges() {
+                const updatedData = {};
+                let hasChanges = false;
+                let validationError = false;
+                
+                const inputs = profileDetailsEl.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const fieldName = input.getAttribute('data-field');
+                    const newValue = input.value.trim();
+                    const oldValue = profileData.fields[fieldName];
+                    
+                       if (fieldName === 'Mobile' && newValue !== oldValue) {
+                          if (!validateMobileNumber(newValue)) {
+                              alert('Mobile number must be exactly 10 digits');
+                              input.style.border = '2px solid red';
+                              validationError = true;
+                              return;
+                          } 
+                          else {
+                              input.style.border = ''; 
+                          }
+                      }
+                      
+                      if (fieldName === 'Email' && newValue !== oldValue) {
+                            if (!validateEmail(newValue)) {
+                                alert('Please enter a valid email address');
+                                input.style.border = '2px solid red';
+                                validationError = true;
+                                return;
+                            } else {
+                                input.style.border = ''; 
+                            }
+                        }
+                    
+                    if (newValue !== oldValue) {
+                        updatedData[fieldName] = newValue;
+                        profileData.fields[fieldName] = newValue;
+                        hasChanges = true;
+                    }
+                });
+                
+                if (validationError) return;
+                
+                if (!hasChanges) {
+                    cancelEditing();
+                    return;
+                }
+                
+                // Prepare form data for submission
+                const formData = new FormData();
+                
+                for (const [fieldName, value] of Object.entries(updatedData)) {
+                    if (fieldName === 'Name' || fieldName === 'patient_name' || fieldName === 'staff_name') {
+                        formData.append('name', value);
+                    } else if (fieldName === 'Email') {
+                        formData.append('newMailId', value);
+                    } else if (fieldName === 'Mobile') {
+                        formData.append('mobileNumber', value);
+                    } else if (fieldName === 'Address') {
+                        formData.append('address', value);
+                    }
+                    // Age field is excluded as requested
+                }
+                
+                // Send update request to servlet
+                fetch('/kaayakarpam/editProfile', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result.includes('successfully')) {
+                        successMessageEl.style.display = 'block';
+                        setTimeout(() => {
+                            successMessageEl.style.display = 'none';
+                        }, 3000);
+                        
+                        cancelEditing();
+                    } else {
+                        alert('Error updating profile: ' + result);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating profile: ' + error.message);
+                });
+            }
+            
+         function resetPassword() {
+    const email = document.getElementById('email').value.trim();
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Validation
+    if (!validateEmail(email)) {
+        alert('Please enter a valid email address');
+        document.getElementById('email').focus();
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('New password and confirmation do not match');
+        document.getElementById('confirmPassword').focus();
+        return;
+    }
+    
+    if (currentPassword === newPassword) {
+        alert('New password must be different from current password');
+        document.getElementById('newPassword').focus();
+        return;
+    }
+    
+    if (!validatePassword(newPassword)) {
+        alert('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number');
+        document.getElementById('newPassword').focus();
+        return;
+    }
+    
+    // Prepare data for submission
+    const passwordData = {
+        mailId: email,
+        password: currentPassword,
+        newPassword: newPassword
+    };
+    
+    // Send reset request to servlet
+    fetch('/kaayakarpam/passwordReset', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(passwordData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if the response contains an error message
+        if (data.error) {
+            // Even if it's an "error" field, it might be a success message
+            if (data.error.includes("Successfully")) {
+                alert('Password reset successfully!');
+                hidePasswordResetForm();
+            } else {
+                alert('Error resetting password: ' + data.error);
+            }
+        } else {
+            // If no error field, assume success
+            alert('Password reset successfully!');
+            hidePasswordResetForm();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error resetting password: ' + error.message);
+    });
+}
+            
+            // Event listeners
+            editBtn.addEventListener('click', enableEditing);
+            resetPasswordBtn.addEventListener('click', showPasswordResetForm);
+            cancelBtn.addEventListener('click', cancelEditing);
+            cancelPasswordBtn.addEventListener('click', hidePasswordResetForm);
+            submitPasswordBtn.addEventListener('click', resetPassword);
+            saveBtn.addEventListener('click', saveChanges);
+        });
+    </script>
+</body>
+</html>

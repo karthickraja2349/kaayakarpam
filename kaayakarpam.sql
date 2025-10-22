@@ -1,0 +1,685 @@
+-- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
+--
+-- Host: localhost    Database: kaayakarpam
+-- ------------------------------------------------------
+-- Server version	8.0.42
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup 
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'a8dac8a2-7f0b-11f0-b843-d4548bc43727:1-3,
+aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee:1-1882';
+
+--
+-- Table structure for table `admin`
+--
+
+DROP TABLE IF EXISTS `admin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin` (
+  `admin_id` tinyint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `mobile_number` varchar(10) DEFAULT NULL,
+  `age` tinyint NOT NULL,
+  `gender` enum('Male','Female','Other') DEFAULT NULL,
+  `address` varchar(500) NOT NULL,
+  PRIMARY KEY (`admin_id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `mobile_number` (`mobile_number`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin`
+--
+
+LOCK TABLES `admin` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES (1,'manikandan','karthickraja182356@gmail.com','9898989898',12,'Male','kerala'),(2,'Manikandan','karthick182356@gmail.com','8989893373',12,'Male','kerala, India'),(5,'manikandan','bud@gmail.com','6767676767',12,'Male','kerala'),(11,'kalai','kalai@gmail.com','8888888888',20,'Female','srivilliputhur'),(13,'kalai','bud1@gmail.com','9090878909',20,'Female','srivilliputhur'),(20,'ramar','karthick186@gmail.com','9898989899',33,'Male','kerala');
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `admin_credentials`
+--
+
+DROP TABLE IF EXISTS `admin_credentials`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin_credentials` (
+  `admin_id` tinyint NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `password_salt` varchar(255) NOT NULL,
+  PRIMARY KEY (`admin_id`),
+  CONSTRAINT `admin_credentials_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin_credentials`
+--
+
+LOCK TABLES `admin_credentials` WRITE;
+/*!40000 ALTER TABLE `admin_credentials` DISABLE KEYS */;
+INSERT INTO `admin_credentials` VALUES (1,'k2dkPCOIZnZ0XOAAGH0PDaygKqUVGrlS50t4Vp7oq2I=','77+9aO+/vVjvv73vv70h77+977+977+9Cu+/vXJl77+9'),(2,'cDG7nMmUm235iz+gA5+1V27PcU7f5cQ1BrQy+BD/YwM=','J++/vWXvv71Q77+9TkZDYh/vv71gBVTvv70='),(5,'C/Mml/gMcyC2B6bjB+cFLRBH2v2VlDt8YMn7mExWT/c=','QEbvv73vv73vv71IVhxBcNqN77+9YO+/ve+/vQ=='),(11,'gpE9ZCJvp4lf6sEXyitaup4uvCdIpE4yWvpXWyiU2Dw=','S++/vSJkVO+/ve+/vUhwGO+/ve+/ve+/vWwBQw=='),(13,'grBYlxGwNU+rV1nnZXkF/64q23NMzo+J2/JSjRx3JK4=','77+9b1w03akc77+977+977+9A++/vdWv77+9'),(20,'7c5JfHa3J3PEG4FBnCm9wfFDgXTJyd3zNb7JNweuDWY=','77+977+9Pu+/vQ7vv71pdynvv73vv71oGe+/ve+/vQ8=');
+/*!40000 ALTER TABLE `admin_credentials` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ambulance`
+--
+
+DROP TABLE IF EXISTS `ambulance`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ambulance` (
+  `ambulance_id` smallint NOT NULL AUTO_INCREMENT,
+  `hospital_id` smallint NOT NULL,
+  `vehicle_number` varchar(50) NOT NULL,
+  `current_location` varchar(255) DEFAULT NULL,
+  `latitude` decimal(9,6) DEFAULT '0.000000',
+  `longitude` decimal(9,6) DEFAULT '0.000000',
+  `is_available` tinyint(1) NOT NULL DEFAULT '1',
+  `is_deleted` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`ambulance_id`),
+  UNIQUE KEY `vehicle_number` (`vehicle_number`),
+  KEY `hospital_id` (`hospital_id`),
+  CONSTRAINT `ambulance_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ambulance`
+--
+
+LOCK TABLES `ambulance` WRITE;
+/*!40000 ALTER TABLE `ambulance` DISABLE KEYS */;
+INSERT INTO `ambulance` VALUES (1,1,'TN81G1234','suchindram',8.159286,77.463351,1,0),(2,1,'TN81G1245','muttom',8.123489,77.315719,1,0),(3,5,'TN67G6565','melapalayam',8.699490,77.714860,1,0),(4,6,'TN82U9090','nagerkoil',8.156538,77.457733,1,0),(5,2,'KL86U9090','punalur',9.015017,76.926239,1,0),(8,2,'TN81G1246','Tirunelveli',8.732609,77.713228,1,0),(10,2,'TN81G1247','Tirunelveli',8.737285,77.709795,1,0),(11,8,'KL81G1245','Erumely',9.452826,76.869465,1,0),(12,8,'KL81G1242','pandalam',9.225744,76.676081,1,0),(13,8,'KL81G1244','pandalam',9.246625,76.754109,1,0),(14,9,'LK23A1234','kavaratti',10.566016,72.636358,1,0),(15,10,'AN01G1234','sri vijaya puram',11.637470,92.728854,1,0),(16,4,'TN72G1345','parvathipuram',8.190595,77.400429,1,0),(17,8,'Kl21U9890','Erumely',9.450035,76.848242,1,0),(35,2,'KL81G1249','idukki',9.838404,76.949241,1,0),(36,10,'AN01G1238','Andaman',12.650267,92.813499,0,0),(37,15,'TN67R2345','sivakasi',9.458601,77.762229,1,0),(39,5,'TN67G6566','srivaikuntam',8.648037,77.854365,1,0),(41,10,'AN01G3456','Taylorabad',11.603991,92.685502,1,0);
+/*!40000 ALTER TABLE `ambulance` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ambulance_request`
+--
+
+DROP TABLE IF EXISTS `ambulance_request`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ambulance_request` (
+  `request_id` int NOT NULL AUTO_INCREMENT,
+  `location` varchar(255) DEFAULT NULL,
+  `latitude` decimal(9,6) NOT NULL,
+  `longitude` decimal(9,6) NOT NULL,
+  `request_type` enum('CRITICAL','NORMAL','BOOK') NOT NULL,
+  `status` enum('PENDING','ALLOCATED','COMPLETED','EXPIRED') DEFAULT 'PENDING',
+  `hospital_id` smallint DEFAULT NULL,
+  `ambulance_id` smallint DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`request_id`),
+  KEY `hospital_id` (`hospital_id`),
+  KEY `ambulance_id` (`ambulance_id`),
+  CONSTRAINT `ambulance_request_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`),
+  CONSTRAINT `ambulance_request_ibfk_2` FOREIGN KEY (`ambulance_id`) REFERENCES `ambulance` (`ambulance_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ambulance_request`
+--
+
+LOCK TABLES `ambulance_request` WRITE;
+/*!40000 ALTER TABLE `ambulance_request` DISABLE KEYS */;
+INSERT INTO `ambulance_request` VALUES (1,'suchindram',8.157241,77.459179,'CRITICAL','EXPIRED',6,4,'2025-09-03 05:47:23'),(2,'suchindram',8.151096,77.458724,'CRITICAL','EXPIRED',6,4,'2025-09-03 12:51:29'),(3,'suchindram',8.157563,77.452415,'CRITICAL','EXPIRED',6,4,'2025-09-03 12:58:02'),(4,'punalur',9.625411,76.970866,'CRITICAL','EXPIRED',2,5,'2025-09-03 13:03:22'),(5,'muttom',8.198580,77.300111,'CRITICAL','EXPIRED',1,2,'2025-09-03 13:07:07'),(6,'muttom',8.253389,77.316395,'CRITICAL','EXPIRED',1,2,'2025-09-03 13:12:14'),(7,'punalur',9.720520,77.025835,'CRITICAL','EXPIRED',2,5,'2025-09-03 13:32:41'),(8,'palayankottai',8.729212,77.679546,'CRITICAL','EXPIRED',5,3,'2025-09-03 15:36:56'),(9,'palayankottai',8.778015,77.709994,'CRITICAL','EXPIRED',5,3,'2025-09-03 16:00:21'),(10,'punalur',8.547823,77.159514,'CRITICAL','EXPIRED',2,5,'2025-09-03 16:04:56'),(11,'palayankottai',8.702097,77.671560,'NORMAL','EXPIRED',5,3,'2025-09-03 16:18:40'),(12,'suchindram',8.190435,77.440548,'CRITICAL','EXPIRED',1,1,'2025-09-03 16:27:04'),(13,'palayankottai',8.696674,77.701508,'NORMAL','EXPIRED',5,3,'2025-09-04 04:32:42'),(14,'palayankottai',8.723789,77.696018,'NORMAL','EXPIRED',5,3,'2025-09-04 04:47:18'),(15,'palayankottai',8.761748,77.679546,'NORMAL','EXPIRED',5,3,'2025-09-04 05:08:43'),(16,'punalur',8.712851,77.272751,'NORMAL','EXPIRED',2,5,'2025-09-04 05:13:56'),(17,'palayankottai',8.707520,77.685037,'NORMAL','EXPIRED',5,3,'2025-09-04 06:06:23'),(18,'palayankottai',8.636920,77.684538,'CRITICAL','EXPIRED',5,3,'2025-09-04 06:17:37'),(19,'punalur',8.544697,77.278241,'NORMAL','EXPIRED',5,2,'2025-09-04 06:32:38'),(20,'suchindram',7.307301,77.966642,'CRITICAL','EXPIRED',2,4,'2025-09-04 07:45:04'),(21,'palayankottai',8.745481,77.693522,'CRITICAL','EXPIRED',5,3,'2025-09-04 09:23:00'),(22,'N/A',10.373903,77.935104,'NORMAL','EXPIRED',2,5,'2025-09-04 09:27:39'),(23,'N/A',8.181108,77.424488,'CRITICAL','EXPIRED',1,1,'2025-09-04 09:30:15'),(24,'punalur',9.967907,78.066875,'BOOK','EXPIRED',5,3,'2025-09-04 11:39:09'),(25,'palayankottai',8.723789,77.712489,'CRITICAL','EXPIRED',5,3,'2025-09-04 13:09:17'),(26,'N/A',8.563946,77.159556,'NORMAL','EXPIRED',5,5,'2025-09-04 13:16:32'),(27,'palayankottai',9.081530,77.597189,'CRITICAL','EXPIRED',5,3,'2025-09-07 15:03:46'),(28,'N/A',8.285607,77.551661,'NORMAL','EXPIRED',6,4,'2025-09-07 15:07:35'),(29,'palayankottai',8.727387,77.708112,'BOOK','EXPIRED',5,3,'2025-09-08 06:35:39'),(30,'palayankottai',8.740058,77.649598,'BOOK','EXPIRED',5,3,'2025-09-08 06:44:43'),(31,'N/A',8.695681,77.556257,'NORMAL','EXPIRED',5,3,'2025-09-08 07:14:00'),(32,'palayankottai',8.721325,77.703192,'NORMAL','EXPIRED',5,3,'2025-09-08 09:10:39'),(33,'N/A',8.246263,77.605672,'CRITICAL','EXPIRED',6,4,'2025-09-08 09:12:27'),(34,'N/A',9.446056,76.871241,'CRITICAL','EXPIRED',8,11,'2025-09-08 09:16:30'),(35,'N/A',8.741834,77.821408,'CRITICAL','EXPIRED',5,3,'2025-09-08 09:17:35'),(36,'pandalam',9.227881,76.677438,'NORMAL','EXPIRED',8,12,'2025-09-08 09:20:34'),(37,'omalloor',9.236834,76.838270,'CRITICAL','EXPIRED',8,13,'2025-09-08 09:22:07'),(38,'omalloor',9.242702,76.753780,'NORMAL','EXPIRED',8,13,'2025-09-08 12:02:38'),(39,'N/A',4.414633,72.895592,'NORMAL','EXPIRED',6,4,'2025-09-09 05:40:40'),(40,'N/A',8.714792,77.765962,'NORMAL','EXPIRED',6,4,'2025-09-09 06:55:53'),(41,'N/A',8.711100,77.768369,'NORMAL','EXPIRED',6,4,'2025-09-09 06:58:33'),(42,'N/A',8.713517,77.769785,'NORMAL','EXPIRED',5,3,'2025-09-09 07:07:26'),(43,'N/A',8.713536,77.768266,'NORMAL','EXPIRED',5,3,'2025-09-09 07:26:20'),(44,'N/A',8.709663,77.765939,'NORMAL','EXPIRED',5,3,'2025-09-09 07:36:49'),(45,'N/A',8.713477,77.767535,'NORMAL','EXPIRED',4,3,'2025-09-09 07:42:19'),(46,'N/A',8.714587,77.765530,'CRITICAL','EXPIRED',5,3,'2025-09-09 07:48:01'),(47,'N/A',8.137092,77.496527,'CRITICAL','EXPIRED',6,4,'2025-09-09 07:49:36'),(48,'N/A',9.329790,76.844915,'CRITICAL','EXPIRED',8,13,'2025-09-09 07:54:28'),(49,'N/A',9.303585,76.877935,'NORMAL','EXPIRED',8,11,'2025-09-09 07:57:24'),(50,'N/A',9.325241,76.866954,'CRITICAL','EXPIRED',8,11,'2025-09-09 08:58:39'),(51,'N/A',8.517661,77.641113,'NORMAL','EXPIRED',5,3,'2025-09-09 12:44:52'),(52,'N/A',8.490530,77.663574,'NORMAL','EXPIRED',5,3,'2025-09-09 13:12:18'),(53,'N/A',8.821390,77.059620,'NORMAL','EXPIRED',5,3,'2025-09-09 13:21:46'),(54,'N/A',9.416389,76.806122,'NORMAL','EXPIRED',8,3,'2025-09-09 16:01:48'),(55,'N/A',8.224544,77.591696,'CRITICAL','EXPIRED',6,4,'2025-09-09 16:04:02'),(56,'N/A',9.406394,76.855725,'CRITICAL','EXPIRED',5,3,'2025-09-09 16:06:59'),(57,'palayankottai',8.810547,77.844760,'NORMAL','EXPIRED',5,3,'2025-09-09 16:19:24'),(58,'N/A',8.435703,77.548168,'CRITICAL','EXPIRED',6,4,'2025-09-09 16:25:21'),(59,'N/A',9.295909,76.847394,'CRITICAL','EXPIRED',5,3,'2025-09-09 16:31:49'),(60,'N/A',9.016418,76.926107,'CRITICAL','EXPIRED',5,3,'2025-09-09 16:40:25'),(61,'N/A',8.945622,76.968446,'NORMAL','EXPIRED',2,5,'2025-09-09 16:50:46'),(62,'N/A',9.494122,76.983206,'NORMAL','EXPIRED',8,11,'2025-09-09 16:50:53'),(63,'N/A',9.221497,76.894708,'NORMAL','EXPIRED',8,13,'2025-09-09 17:06:07'),(64,'N/A',8.767171,77.076092,'NORMAL','EXPIRED',2,5,'2025-09-09 17:08:36'),(65,'N/A',8.159379,77.581214,'NORMAL','EXPIRED',8,1,'2025-09-09 17:09:46'),(66,'N/A',9.330655,76.812548,'NORMAL','EXPIRED',8,13,'2025-09-09 17:15:53'),(67,'N/A',9.330655,76.834510,'NORMAL','EXPIRED',8,13,'2025-09-09 17:36:50'),(68,'N/A',9.336069,76.812548,'NORMAL','EXPIRED',8,17,'2025-09-09 17:40:05'),(69,'N/A',9.420830,76.955119,'NORMAL','EXPIRED',8,11,'2025-09-09 17:53:19'),(70,'N/A',9.303585,76.861464,'NORMAL','EXPIRED',8,13,'2025-09-10 04:02:03'),(71,'N/A',9.298171,76.834011,'NORMAL','EXPIRED',8,13,'2025-09-10 04:15:24'),(72,'N/A',8.912046,76.916937,'NORMAL','EXPIRED',2,5,'2025-09-10 12:00:32'),(73,'N/A',8.745481,77.087073,'NORMAL','EXPIRED',2,5,'2025-09-10 12:47:55'),(74,'N/A',9.801335,76.993735,'NORMAL','EXPIRED',2,35,'2025-09-11 10:39:49'),(75,'N/A',11.601973,92.689401,'CRITICAL','EXPIRED',10,15,'2025-09-12 07:07:25'),(76,'N/A',10.570981,72.636767,'CRITICAL','EXPIRED',9,14,'2025-09-12 07:10:09'),(77,'N/A',9.390202,77.087073,'NORMAL','EXPIRED',2,5,'2025-09-12 07:20:54'),(78,'N/A',10.638231,77.921627,'NORMAL','EXPIRED',2,35,'2025-09-12 07:23:33'),(79,'N/A',11.950962,79.640150,'NORMAL','EXPIRED',5,3,'2025-09-12 07:25:16'),(80,'N/A',10.569673,72.636607,'NORMAL','EXPIRED',9,14,'2025-09-12 07:27:30'),(81,'palayankottai',8.566491,77.745931,'NORMAL','EXPIRED',5,3,'2025-09-12 16:03:56'),(82,'N/A',9.438915,77.009707,'NORMAL','EXPIRED',2,35,'2025-09-13 05:53:22'),(83,'N/A',8.571916,77.822299,'NORMAL','EXPIRED',5,3,'2025-09-13 05:54:24'),(84,'palayankottai',8.720187,77.764882,'NORMAL','EXPIRED',5,3,'2025-09-13 07:22:51'),(85,'suchindram',8.159378,77.445115,'NORMAL','EXPIRED',6,4,'2025-09-13 07:33:47'),(86,'Thisayanviali',8.333739,77.854875,'NORMAL','EXPIRED',1,1,'2025-09-13 07:55:08'),(87,'N/A',8.147227,77.563478,'NORMAL','EXPIRED',5,1,'2025-09-13 08:40:34'),(88,'N/A',8.445567,77.916677,'NORMAL','EXPIRED',6,3,'2025-09-13 09:55:09'),(89,'N/A',8.117191,77.504731,'NORMAL','EXPIRED',4,4,'2025-09-13 09:55:58'),(90,'N/A',9.436163,77.767395,'NORMAL','EXPIRED',15,37,'2025-09-13 09:56:28'),(91,'N/A',8.628903,77.908412,'NORMAL','EXPIRED',5,3,'2025-09-13 10:27:55'),(92,'N/A',8.255910,77.521178,'NORMAL','EXPIRED',4,1,'2025-09-13 10:28:34'),(93,'N/A',8.168103,77.441329,'NORMAL','EXPIRED',6,4,'2025-09-13 10:29:05'),(94,'N/A',9.449739,77.745432,'NORMAL','EXPIRED',15,37,'2025-09-13 11:02:32'),(95,'N/A',9.438915,77.696517,'NORMAL','EXPIRED',15,37,'2025-09-13 11:10:01'),(96,'N/A',8.577341,77.581217,'NORMAL','EXPIRED',5,3,'2025-09-13 11:12:11'),(97,'N/A',8.717258,77.801578,'NORMAL','EXPIRED',5,3,'2025-09-15 06:18:26'),(98,'N/A',8.642436,77.860733,'NORMAL','EXPIRED',5,3,'2025-09-15 06:26:29'),(99,'N/A',8.715011,77.771392,'NORMAL','EXPIRED',5,3,'2025-09-15 06:41:35'),(100,'N/A',8.717603,77.769813,'CRITICAL','EXPIRED',5,3,'2025-09-15 06:48:27'),(101,'N/A',8.129327,77.495227,'NORMAL','EXPIRED',6,4,'2025-09-15 06:51:25'),(102,'N/A',8.316758,77.585709,'CRITICAL','EXPIRED',5,1,'2025-09-15 07:04:53'),(103,'N/A',8.544789,77.657584,'CRITICAL','EXPIRED',5,3,'2025-09-15 07:05:16'),(104,'N/A',8.712178,77.764624,'NORMAL','EXPIRED',5,3,'2025-09-15 07:48:54'),(105,'N/A',8.628397,77.868289,'CRITICAL','EXPIRED',5,39,'2025-09-15 07:49:10'),(106,'N/A',8.627923,77.865588,'NORMAL','EXPIRED',6,39,'2025-09-15 13:06:06'),(107,'N/A',8.633504,77.852338,'CRITICAL','EXPIRED',5,39,'2025-09-15 13:32:00'),(108,'N/A',8.630429,77.883580,'NORMAL','EXPIRED',5,39,'2025-09-15 15:51:38'),(109,'N/A',8.652289,77.880818,'NORMAL','EXPIRED',5,39,'2025-09-16 04:00:14'),(110,'N/A',8.151457,77.374220,'NORMAL','EXPIRED',6,4,'2025-09-16 04:46:29'),(111,'N/A',8.147068,77.381393,'NORMAL','EXPIRED',6,4,'2025-09-16 05:20:01'),(112,'N/A',9.693191,79.144508,'NORMAL','EXPIRED',2,8,'2025-09-16 06:45:50'),(113,'palayankottai',8.704861,77.751652,'CRITICAL','EXPIRED',5,3,'2025-09-17 06:46:55'),(114,'Palayankottai',8.690127,77.759418,'CRITICAL','EXPIRED',5,3,'2025-09-17 06:47:44'),(115,'palayankottai',8.695044,77.761257,'NORMAL','EXPIRED',5,3,'2025-09-17 07:07:05'),(116,'Palayankottai',8.694237,77.768506,'CRITICAL','EXPIRED',5,3,'2025-09-17 07:07:05'),(117,'srivaikuntam',8.632048,77.837978,'CRITICAL','EXPIRED',5,39,'2025-09-17 07:11:16'),(118,'Srivaikuntam',8.633662,77.845876,'CRITICAL','EXPIRED',5,39,'2025-09-17 07:11:16'),(119,'palayankottai',8.686864,77.769488,'CRITICAL','EXPIRED',5,3,'2025-09-17 07:15:54'),(120,'Palayankottai',8.696602,77.766499,'CRITICAL','EXPIRED',5,39,'2025-09-17 07:18:14'),(121,'palayankottai',8.716131,77.733076,'NORMAL','EXPIRED',5,3,'2025-09-17 07:35:28'),(122,'Palayankottai',8.720171,77.726871,'NORMAL','EXPIRED',5,39,'2025-09-17 07:35:29'),(123,'palayankottai',8.705934,77.743378,'NORMAL','EXPIRED',5,3,'2025-09-17 10:05:28'),(124,'srivaikuntam',8.647488,77.829944,'NORMAL','EXPIRED',5,39,'2025-09-17 10:14:00'),(125,'sivakasi',9.426713,77.788009,'NORMAL','EXPIRED',15,37,'2025-09-17 10:33:48');
+/*!40000 ALTER TABLE `ambulance_request` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `bed_allocation_audit`
+--
+
+DROP TABLE IF EXISTS `bed_allocation_audit`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bed_allocation_audit` (
+  `audit_id` int NOT NULL AUTO_INCREMENT,
+  `temporary_request_id` int NOT NULL,
+  `processed_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_id`),
+  KEY `temporary_request_id` (`temporary_request_id`),
+  CONSTRAINT `bed_allocation_audit_ibfk_1` FOREIGN KEY (`temporary_request_id`) REFERENCES `patient_temporary_requests` (`temporary_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=218 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bed_allocation_audit`
+--
+
+LOCK TABLES `bed_allocation_audit` WRITE;
+/*!40000 ALTER TABLE `bed_allocation_audit` DISABLE KEYS */;
+INSERT INTO `bed_allocation_audit` VALUES (1,92,'2025-09-10 04:41:51'),(2,93,'2025-09-10 04:41:51'),(3,95,'2025-09-10 04:41:51'),(4,96,'2025-09-10 04:41:51'),(5,97,'2025-09-10 04:41:51'),(6,99,'2025-09-10 04:41:51'),(7,100,'2025-09-10 04:41:51'),(8,101,'2025-09-10 04:41:51'),(9,102,'2025-09-10 04:41:51'),(10,104,'2025-09-10 04:41:51'),(11,105,'2025-09-10 04:41:51'),(12,106,'2025-09-10 04:41:51'),(13,107,'2025-09-10 04:41:51'),(14,108,'2025-09-10 04:41:51'),(16,109,'2025-09-10 05:19:04'),(17,110,'2025-09-10 05:19:04'),(18,111,'2025-09-10 05:19:04'),(19,112,'2025-09-10 05:19:04'),(20,113,'2025-09-10 05:19:04'),(21,114,'2025-09-10 05:19:04'),(22,115,'2025-09-10 05:19:04'),(23,116,'2025-09-10 05:19:04'),(24,120,'2025-09-13 06:28:28'),(25,121,'2025-09-13 06:28:28'),(26,122,'2025-09-13 06:28:28'),(27,123,'2025-09-13 06:28:28'),(28,124,'2025-09-13 06:28:28'),(29,125,'2025-09-13 06:28:28'),(30,132,'2025-09-13 06:28:28'),(31,133,'2025-09-13 06:28:28'),(32,134,'2025-09-13 06:28:28'),(33,135,'2025-09-13 06:28:28'),(34,136,'2025-09-13 06:28:28'),(35,137,'2025-09-13 06:28:28'),(39,1,'2025-09-13 09:41:30'),(40,2,'2025-09-13 09:41:30'),(41,3,'2025-09-13 09:41:30'),(42,4,'2025-09-13 09:41:30'),(43,5,'2025-09-13 09:41:30'),(44,6,'2025-09-13 09:41:30'),(45,7,'2025-09-13 09:41:30'),(46,8,'2025-09-13 09:41:30'),(47,9,'2025-09-13 09:41:30'),(48,10,'2025-09-13 09:41:30'),(49,11,'2025-09-13 09:41:30'),(50,12,'2025-09-13 09:41:30'),(51,13,'2025-09-13 09:41:30'),(52,14,'2025-09-13 09:41:30'),(53,15,'2025-09-13 09:41:30'),(54,16,'2025-09-13 09:41:30'),(55,17,'2025-09-13 09:41:30'),(56,18,'2025-09-13 09:41:30'),(57,19,'2025-09-13 09:41:30'),(58,20,'2025-09-13 09:41:30'),(59,21,'2025-09-13 09:41:30'),(60,22,'2025-09-13 09:41:30'),(61,23,'2025-09-13 09:41:30'),(62,24,'2025-09-13 09:41:30'),(63,25,'2025-09-13 09:41:30'),(64,26,'2025-09-13 09:41:30'),(65,27,'2025-09-13 09:41:30'),(66,28,'2025-09-13 09:41:30'),(67,29,'2025-09-13 09:41:30'),(68,30,'2025-09-13 09:41:30'),(69,31,'2025-09-13 09:41:30'),(70,32,'2025-09-13 09:41:30'),(71,33,'2025-09-13 09:41:30'),(72,34,'2025-09-13 09:41:30'),(73,35,'2025-09-13 09:41:30'),(74,36,'2025-09-13 09:41:30'),(75,37,'2025-09-13 09:41:30'),(76,38,'2025-09-13 09:41:30'),(77,39,'2025-09-13 09:41:30'),(78,40,'2025-09-13 09:41:30'),(79,41,'2025-09-13 09:41:30'),(80,42,'2025-09-13 09:41:30'),(81,43,'2025-09-13 09:41:30'),(82,44,'2025-09-13 09:41:30'),(83,45,'2025-09-13 09:41:30'),(84,46,'2025-09-13 09:41:30'),(85,47,'2025-09-13 09:41:30'),(86,48,'2025-09-13 09:41:30'),(87,49,'2025-09-13 09:41:30'),(88,68,'2025-09-13 09:41:30'),(89,69,'2025-09-13 09:41:30'),(90,70,'2025-09-13 09:41:30'),(91,71,'2025-09-13 09:41:30'),(92,72,'2025-09-13 09:41:30'),(93,73,'2025-09-13 09:41:30'),(94,74,'2025-09-13 09:41:30'),(95,75,'2025-09-13 09:41:30'),(96,76,'2025-09-13 09:41:30'),(97,77,'2025-09-13 09:41:30'),(98,78,'2025-09-13 09:41:30'),(99,79,'2025-09-13 09:41:30'),(100,80,'2025-09-13 09:41:30'),(101,81,'2025-09-13 09:41:30'),(102,82,'2025-09-13 09:41:30'),(103,83,'2025-09-13 09:41:30'),(104,84,'2025-09-13 09:41:30'),(105,85,'2025-09-13 09:41:30'),(106,86,'2025-09-13 09:41:30'),(107,87,'2025-09-13 09:41:30'),(108,88,'2025-09-13 09:41:30'),(109,89,'2025-09-13 09:41:30'),(110,90,'2025-09-13 09:41:30'),(111,91,'2025-09-13 09:41:30'),(112,94,'2025-09-13 09:41:30'),(113,98,'2025-09-13 09:41:30'),(114,103,'2025-09-13 09:41:30'),(115,117,'2025-09-13 09:41:30'),(116,118,'2025-09-13 09:41:30'),(117,119,'2025-09-13 09:41:30'),(118,126,'2025-09-13 09:41:30'),(119,127,'2025-09-13 09:41:30'),(120,128,'2025-09-13 09:41:30'),(121,129,'2025-09-13 09:41:30'),(122,130,'2025-09-13 09:41:30'),(123,131,'2025-09-13 09:41:30'),(124,138,'2025-09-13 09:41:30'),(125,139,'2025-09-13 09:41:30'),(126,140,'2025-09-13 09:41:30'),(127,141,'2025-09-13 09:41:30'),(128,142,'2025-09-13 09:41:30'),(129,143,'2025-09-13 09:41:30'),(130,144,'2025-09-13 09:41:30'),(166,146,'2025-09-13 10:23:24'),(167,147,'2025-09-13 10:23:24'),(169,150,'2025-09-13 10:48:39'),(170,149,'2025-09-13 10:52:39'),(171,145,'2025-09-15 09:44:08'),(172,148,'2025-09-15 09:44:08'),(173,151,'2025-09-15 09:44:08'),(174,152,'2025-09-15 09:44:08'),(175,153,'2025-09-15 09:44:08'),(176,154,'2025-09-15 09:44:08'),(177,155,'2025-09-15 09:44:08'),(178,156,'2025-09-15 09:44:08'),(179,157,'2025-09-15 09:44:08'),(180,158,'2025-09-15 09:44:08'),(181,159,'2025-09-15 09:44:08'),(182,160,'2025-09-15 09:44:08'),(183,161,'2025-09-15 09:44:08'),(184,162,'2025-09-15 09:44:08'),(185,163,'2025-09-15 09:44:08'),(186,164,'2025-09-15 12:47:36'),(187,165,'2025-09-15 12:49:36'),(188,166,'2025-09-15 12:50:36'),(189,167,'2025-09-15 12:50:36'),(190,168,'2025-09-15 16:36:31'),(191,169,'2025-09-15 16:36:31'),(192,170,'2025-09-15 16:36:31'),(193,171,'2025-09-16 04:42:04'),(194,172,'2025-09-16 05:19:45'),(195,173,'2025-09-16 05:20:45'),(196,174,'2025-09-16 09:31:52'),(197,175,'2025-09-16 09:56:13'),(198,176,'2025-09-16 09:56:43'),(199,177,'2025-09-17 06:49:27'),(200,178,'2025-09-17 06:49:27'),(202,179,'2025-09-17 07:07:53'),(203,180,'2025-09-17 07:07:53'),(205,181,'2025-09-17 07:14:56'),(206,182,'2025-09-17 07:14:56'),(208,183,'2025-09-17 07:37:23'),(209,184,'2025-09-17 07:37:23'),(210,185,'2025-09-17 07:37:23'),(211,186,'2025-09-17 07:37:23'),(215,187,'2025-09-17 10:07:11'),(216,188,'2025-09-17 10:16:26'),(217,189,'2025-09-17 10:50:45');
+/*!40000 ALTER TABLE `bed_allocation_audit` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `bed_discharge_audit`
+--
+
+DROP TABLE IF EXISTS `bed_discharge_audit`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bed_discharge_audit` (
+  `audit_id` int NOT NULL AUTO_INCREMENT,
+  `inpatient_id` int NOT NULL,
+  `processed_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_id`),
+  KEY `inpatient_id` (`inpatient_id`),
+  CONSTRAINT `bed_discharge_audit_ibfk_1` FOREIGN KEY (`inpatient_id`) REFERENCES `inpatient_details` (`inpatient_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bed_discharge_audit`
+--
+
+LOCK TABLES `bed_discharge_audit` WRITE;
+/*!40000 ALTER TABLE `bed_discharge_audit` DISABLE KEYS */;
+INSERT INTO `bed_discharge_audit` VALUES (1,2,'2025-09-12 13:14:55'),(2,4,'2025-09-12 13:14:55'),(3,48,'2025-09-12 13:14:55'),(4,13,'2025-09-13 06:28:28'),(5,29,'2025-09-13 06:28:28'),(6,30,'2025-09-13 06:28:28'),(7,31,'2025-09-13 06:28:28'),(8,32,'2025-09-13 06:28:28'),(9,33,'2025-09-13 06:28:28'),(11,40,'2025-09-13 06:30:27'),(12,37,'2025-09-13 06:32:57'),(13,12,'2025-09-13 06:34:27'),(14,34,'2025-09-13 06:34:57'),(15,38,'2025-09-13 06:34:57'),(17,39,'2025-09-13 06:35:27'),(18,41,'2025-09-13 06:36:27'),(19,42,'2025-09-13 06:38:27'),(20,43,'2025-09-13 06:38:27'),(21,44,'2025-09-13 06:38:27'),(22,45,'2025-09-13 06:38:27'),(23,47,'2025-09-13 06:38:27'),(24,49,'2025-09-13 06:38:27'),(25,50,'2025-09-13 06:38:27'),(26,5,'2025-09-13 07:27:44'),(27,1,'2025-09-13 07:36:05'),(28,17,'2025-09-13 07:56:14'),(29,7,'2025-09-13 11:13:21'),(30,23,'2025-09-15 05:28:15'),(31,24,'2025-09-15 05:29:15'),(32,36,'2025-09-15 07:46:20'),(33,5538,'2025-09-16 05:31:27'),(34,35,'2025-09-17 07:53:18');
+/*!40000 ALTER TABLE `bed_discharge_audit` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `deleted_hospitals`
+--
+
+DROP TABLE IF EXISTS `deleted_hospitals`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `deleted_hospitals` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `hospital_id` smallint NOT NULL,
+  `deleted_date` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hospital_id` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `deleted_hospitals`
+--
+
+LOCK TABLES `deleted_hospitals` WRITE;
+/*!40000 ALTER TABLE `deleted_hospitals` DISABLE KEYS */;
+INSERT INTO `deleted_hospitals` VALUES (1,8,'2025-09-10 04:23:33'),(7,11,'2025-09-10 05:37:51'),(9,12,'2025-09-10 09:56:55'),(15,13,'2025-09-12 09:44:59');
+/*!40000 ALTER TABLE `deleted_hospitals` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hospital`
+--
+
+DROP TABLE IF EXISTS `hospital`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hospital` (
+  `hospital_id` smallint NOT NULL AUTO_INCREMENT,
+  `hospital_name` varchar(255) NOT NULL,
+  `address` text NOT NULL,
+  `ceo_name` varchar(255) DEFAULT NULL,
+  `location` varchar(20) DEFAULT NULL,
+  `phone_number` varchar(10) DEFAULT NULL,
+  `latitude` decimal(9,6) NOT NULL,
+  `longitude` decimal(9,6) NOT NULL,
+  PRIMARY KEY (`hospital_id`),
+  UNIQUE KEY `phone_number` (`phone_number`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hospital`
+--
+
+LOCK TABLES `hospital` WRITE;
+/*!40000 ALTER TABLE `hospital` DISABLE KEYS */;
+INSERT INTO `hospital` VALUES (1,'GM Hospital','1/106, MN Street, Nehru Road, KaniyaKumari','Tamil','Nagerkoil','9809876578',8.182374,77.487571),(2,'MNM hospital','1A, Bose Road, tamil nagar, thenmala','mahesh','kerala','8080808080',9.925200,78.119800),(4,'NP Hospital','1/136, MN Street, Nehru Road, KaniyaKumari','Braman','Nagerkoil','8909989098',8.184846,77.465598),(5,'GH TLY','No 21, High Ground , palayankottai, thirunelveli','Anbuselvan','Tirunelveli','7676767665',8.744476,77.701804),(6,'Ak Hospital','84D, North cross Streer , suchindram','Aneesh','Nagerkoil','9999999999',8.153175,77.466223),(8,'Arya Hospital','1/12 A, vavar mosque road, Erumeli - kerala','Manikandan','kerala','6789087654',9.223505,76.678515),(9,'MK Hospital','84A, kavaratti , Lakshadweep','san AL eno','Lakshadweep','8765432109',10.570678,72.630865),(10,'cure Hospital','78B, garacharma, South Andaman Island','tifu','Andaman','9098765467',11.612849,92.701981),(11,'PEAK Hospital','84B, kumaran nagar , dindugal','Asmith','dindugal','8769089080',10.315994,77.949996),(12,'PN Hospital','No 21, High Ground , karaikudi','mugil','karaikudi','7778889990',10.086164,78.772814),(13,'malai Hospital','1/56A, sethurapatti, trichy','malai','gce srirangam','9081230983',10.677558,78.595023),(15,'kali Hospital','2A, Indira Nagar, sivakasi','kamaraj','sivakasi','9812001144',9.450363,77.791359),(16,'GH Madurai','44G, kappalur,Madurai','Guru','kappalaur','8711005689',9.844963,78.016303),(17,'GH Rajapalayam','66A, old bus stand Road, Rajapalayam','Illavarasan','Rajapalayam','8909009900',9.450703,77.554970),(19,'MNPT Hospital','1/106, ZW Streer Dindugal','Arjun','Dindugal','8810017718',10.390848,77.964977);
+/*!40000 ALTER TABLE `hospital` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hospital_facilities`
+--
+
+DROP TABLE IF EXISTS `hospital_facilities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hospital_facilities` (
+  `hospital_id` smallint NOT NULL,
+  `total_general_beds` smallint NOT NULL DEFAULT '0',
+  `free_general_beds` smallint NOT NULL DEFAULT '0',
+  `total_icu_beds` smallint NOT NULL DEFAULT '0',
+  `free_icu_beds` smallint NOT NULL DEFAULT '0',
+  `lab_count` tinyint NOT NULL DEFAULT '0',
+  `ambulance_count` tinyint DEFAULT NULL,
+  PRIMARY KEY (`hospital_id`),
+  CONSTRAINT `hospital_facilities_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hospital_facilities`
+--
+
+LOCK TABLES `hospital_facilities` WRITE;
+/*!40000 ALTER TABLE `hospital_facilities` DISABLE KEYS */;
+INSERT INTO `hospital_facilities` VALUES (1,20,15,1,1,2,5),(2,40,39,2,2,3,5),(4,35,32,2,2,3,1),(5,200,161,12,12,8,23),(6,50,42,2,2,3,4),(8,300,299,25,25,4,10),(9,12,12,1,1,1,1),(10,10,10,1,1,1,1),(11,22,22,11,11,2,1),(12,20,20,1,1,1,1),(13,20,20,1,1,1,1),(15,15,11,1,1,1,1),(16,10,10,1,1,1,1),(17,100,94,3,3,1,1),(19,10,10,1,1,1,1);
+/*!40000 ALTER TABLE `hospital_facilities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `inpatient_details`
+--
+
+DROP TABLE IF EXISTS `inpatient_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `inpatient_details` (
+  `inpatient_id` int NOT NULL AUTO_INCREMENT,
+  `patient_name` varchar(50) DEFAULT NULL,
+  `patient_aadhar_number` varchar(12) DEFAULT NULL,
+  `patient_condition` varchar(20) DEFAULT NULL,
+  `reason` varchar(255) DEFAULT NULL,
+  `booked_date` timestamp NULL DEFAULT NULL,
+  `discharge_date` timestamp NULL DEFAULT NULL,
+  `roomNo` int DEFAULT NULL,
+  `hospital_id` smallint DEFAULT NULL,
+  `isDischarged` tinyint(1) DEFAULT '0',
+  `temporary_request_id` int DEFAULT NULL,
+  PRIMARY KEY (`inpatient_id`),
+  UNIQUE KEY `temporary_request_id` (`temporary_request_id`),
+  UNIQUE KEY `temporary_request_id_2` (`temporary_request_id`),
+  KEY `fk_inpatient_hospital` (`hospital_id`),
+  CONSTRAINT `fk_inpatient_hospital` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5567 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `inpatient_details`
+--
+
+LOCK TABLES `inpatient_details` WRITE;
+/*!40000 ALTER TABLE `inpatient_details` DISABLE KEYS */;
+INSERT INTO `inpatient_details` VALUES (1,'Manikandan','343456789098','CRITICAL',NULL,'2025-09-03 12:52:33','2025-09-12 18:30:00',22,6,1,1),(2,NULL,NULL,'critical',NULL,'2025-09-03 12:59:45','2025-09-02 18:30:00',NULL,2,1,2),(3,NULL,NULL,'CRITICAL',NULL,'2025-09-03 13:23:33',NULL,NULL,1,0,4),(4,'Tamil',NULL,'NORMAL','Accident','2025-09-03 13:30:15','2025-09-09 18:30:00',11,2,1,5),(5,'Dilip','232323232323','CRITICAL','Accident','2025-09-03 17:08:11','2025-09-12 18:30:00',23,5,1,9),(6,NULL,NULL,'NORMAL',NULL,'2025-09-03 16:29:19',NULL,NULL,1,0,10),(7,'kumar',NULL,'NORMAL','Accident','2025-09-04 04:39:30','2025-09-12 18:30:00',12,5,1,12),(8,NULL,NULL,'NORMAL',NULL,'2025-09-04 04:54:07',NULL,NULL,5,0,13),(9,NULL,NULL,'NORMAL',NULL,'2025-09-04 06:14:56',NULL,NULL,5,0,16),(11,NULL,NULL,'CRITICAL',NULL,'2025-09-04 10:10:58',NULL,NULL,5,0,19),(12,'ram kumar','908778900987','normal','Accident','2025-09-04 07:30:51','2025-09-12 18:30:00',43,2,1,18),(13,NULL,NULL,'CRITICAL',NULL,'2025-09-04 09:31:10','2025-09-11 18:30:00',NULL,2,1,20),(14,NULL,NULL,'CRITICAL',NULL,'2025-09-04 09:32:43',NULL,NULL,5,0,22),(15,NULL,NULL,'CRITICAL',NULL,'2025-09-04 13:13:43',NULL,NULL,5,0,24),(16,NULL,NULL,'NORMAL',NULL,'2025-09-04 14:17:26',NULL,NULL,5,0,25),(17,'Ayyappan',NULL,'CRITICAL',NULL,'2025-09-08 09:58:36','2025-09-12 18:30:00',NULL,1,1,36),(18,NULL,NULL,'NORMAL',NULL,'2025-09-09 08:32:10',NULL,NULL,5,0,40),(19,NULL,NULL,'NORMAL',NULL,'2025-09-09 07:11:33',NULL,NULL,5,0,41),(20,NULL,NULL,'NORMAL',NULL,'2025-09-09 07:30:14',NULL,NULL,5,0,42),(21,NULL,NULL,'NORMAL',NULL,'2025-09-09 07:40:32',NULL,NULL,4,0,43),(22,NULL,NULL,'NORMAL',NULL,'2025-09-09 07:46:07',NULL,NULL,5,0,44),(23,NULL,NULL,'CRITICAL',NULL,'2025-09-09 07:51:29','2025-09-14 18:30:00',NULL,6,1,45),(24,NULL,NULL,'NORMAL',NULL,'2025-09-08 12:40:41','2025-09-14 18:30:00',NULL,6,1,37),(25,NULL,NULL,'NORMAL',NULL,'2025-09-09 08:29:49',NULL,NULL,6,0,39),(26,NULL,NULL,'NORMAL',NULL,'2025-09-09 20:12:53',NULL,NULL,6,0,38),(27,NULL,NULL,'CRITICAL',NULL,'2025-09-09 07:55:08',NULL,NULL,1,0,46),(28,NULL,NULL,'CRITICAL',NULL,'2025-09-09 08:17:09',NULL,NULL,1,0,47),(29,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,49),(30,NULL,NULL,'',NULL,'2025-09-09 18:30:00','2025-09-11 18:30:00',NULL,2,1,48),(31,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,50),(32,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,51),(33,NULL,NULL,'',NULL,'2025-08-31 18:30:00','2025-09-10 18:30:00',NULL,2,1,52),(34,NULL,NULL,'',NULL,NULL,'2025-09-12 18:30:00',NULL,2,1,53),(35,'simbu',NULL,'',NULL,NULL,'2025-09-16 18:30:00',NULL,5,1,54),(36,NULL,NULL,'',NULL,NULL,'2025-09-14 18:30:00',NULL,5,1,55),(37,NULL,NULL,'',NULL,NULL,'2025-09-12 18:30:00',NULL,2,1,56),(38,NULL,NULL,'',NULL,'2025-09-10 04:32:28','2025-09-12 18:30:00',NULL,2,1,57),(39,NULL,NULL,'',NULL,'2025-09-12 12:38:01','2025-09-12 18:30:00',NULL,2,1,58),(40,NULL,NULL,'',NULL,NULL,'2025-09-12 18:30:00',NULL,2,1,59),(41,'i',NULL,'',NULL,NULL,'2025-09-12 18:30:00',NULL,2,1,60),(42,'Indian',NULL,'',NULL,'2025-09-12 13:19:57','2025-09-11 18:30:00',NULL,2,1,61),(43,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,62),(44,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,63),(45,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,64),(46,'mmm',NULL,'',NULL,NULL,NULL,NULL,8,0,65),(47,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,66),(48,'nbnb',NULL,'',NULL,'2025-09-10 04:24:28','2025-09-09 18:30:00',1,2,1,67),(49,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,68),(50,NULL,NULL,'',NULL,NULL,'2025-09-11 18:30:00',NULL,2,1,69),(5518,NULL,NULL,'',NULL,NULL,NULL,NULL,5,0,70),(5519,NULL,NULL,'',NULL,NULL,NULL,NULL,6,0,71),(5520,NULL,NULL,NULL,NULL,'2025-09-13 07:51:25',NULL,NULL,5,0,141),(5521,'kaleeswari',NULL,NULL,NULL,'2025-09-13 07:51:25',NULL,NULL,6,0,142),(5523,NULL,NULL,NULL,NULL,'2025-09-13 09:05:12',NULL,NULL,5,0,144),(5524,NULL,NULL,NULL,NULL,'2025-09-13 09:05:42',NULL,NULL,1,0,143),(5525,NULL,NULL,'',NULL,NULL,NULL,NULL,6,0,145),(5526,NULL,NULL,NULL,NULL,'2025-09-13 10:12:44',NULL,NULL,15,0,147),(5527,NULL,NULL,NULL,NULL,'2025-09-13 10:16:14',NULL,NULL,4,0,146),(5528,NULL,NULL,'critical',NULL,NULL,NULL,NULL,5,0,148),(5529,NULL,NULL,NULL,NULL,'2025-09-13 10:45:32',NULL,NULL,6,0,150),(5530,NULL,NULL,NULL,NULL,'2025-09-13 10:52:39',NULL,NULL,4,0,149),(5531,NULL,NULL,'',NULL,NULL,NULL,NULL,15,0,151),(5532,NULL,NULL,'',NULL,NULL,NULL,NULL,15,0,152),(5533,NULL,NULL,'',NULL,NULL,NULL,NULL,5,0,153),(5534,NULL,NULL,'',NULL,NULL,NULL,NULL,5,0,154),(5535,NULL,NULL,'normal',NULL,NULL,NULL,NULL,5,0,155),(5536,NULL,NULL,'',NULL,'2025-09-15 06:42:07',NULL,NULL,5,0,156),(5537,NULL,NULL,'',NULL,'2025-09-15 06:49:08',NULL,NULL,5,0,157),(5538,'silambarasan','908778900999','normal','Accident','2025-09-15 06:52:04','2025-09-15 18:30:00',12,6,1,158),(5539,NULL,NULL,'',NULL,'2025-09-15 07:12:16',NULL,NULL,5,0,159),(5540,NULL,NULL,'',NULL,'2025-09-15 07:45:45',NULL,NULL,5,0,160),(5541,NULL,NULL,'',NULL,'2025-09-15 07:50:28',NULL,NULL,5,0,161),(5542,NULL,NULL,'',NULL,'2025-09-15 07:51:01',NULL,NULL,5,0,162),(5543,NULL,NULL,NULL,NULL,'2025-09-15 09:44:08',NULL,NULL,17,0,163),(5544,NULL,NULL,NULL,NULL,'2025-09-15 12:47:36',NULL,NULL,17,0,164),(5545,NULL,NULL,NULL,NULL,'2025-09-15 12:49:36',NULL,NULL,17,0,165),(5546,NULL,NULL,NULL,NULL,'2025-09-15 12:50:36',NULL,NULL,17,0,166),(5547,NULL,NULL,NULL,NULL,'2025-09-15 12:50:36',NULL,NULL,17,0,167),(5549,NULL,NULL,'',NULL,'2025-09-15 13:07:34',NULL,NULL,5,0,168),(5550,NULL,NULL,'',NULL,'2025-09-15 13:33:14',NULL,NULL,5,0,169),(5551,NULL,NULL,'',NULL,'2025-09-15 15:52:21',NULL,NULL,5,0,170),(5552,NULL,NULL,NULL,NULL,'2025-09-16 04:42:04',NULL,NULL,5,0,171),(5553,NULL,NULL,'',NULL,'2025-09-16 04:47:22',NULL,NULL,6,0,172),(5554,NULL,NULL,'',NULL,'2025-09-16 05:20:35',NULL,NULL,6,0,173),(5555,NULL,NULL,'',NULL,'2025-09-17 06:49:07',NULL,NULL,5,0,174),(5556,NULL,NULL,'',NULL,'2025-09-17 06:49:08',NULL,NULL,5,0,175),(5557,NULL,NULL,'',NULL,'2025-09-17 07:07:36',NULL,NULL,5,0,176),(5558,NULL,NULL,'',NULL,'2025-09-17 07:07:37',NULL,NULL,5,0,177),(5559,NULL,NULL,'',NULL,'2025-09-17 07:14:29',NULL,NULL,5,0,178),(5560,NULL,NULL,'',NULL,'2025-09-17 07:14:30',NULL,NULL,5,0,179),(5561,NULL,NULL,'',NULL,'2025-09-17 07:37:11',NULL,NULL,5,0,180),(5562,NULL,NULL,'',NULL,'2025-09-17 07:37:11',NULL,NULL,5,0,181),(5563,NULL,NULL,'',NULL,'2025-09-17 07:37:12',NULL,NULL,5,0,182),(5564,NULL,NULL,'',NULL,'2025-09-17 07:37:13',NULL,NULL,5,0,183),(5565,NULL,NULL,'',NULL,'2025-09-17 10:07:08',NULL,NULL,5,0,184),(5566,NULL,NULL,'',NULL,'2025-09-17 10:16:12',NULL,NULL,5,0,185);
+/*!40000 ALTER TABLE `inpatient_details` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`main`@`localhost`*/ /*!50003 TRIGGER `before_insert_inpatient` BEFORE INSERT ON `inpatient_details` FOR EACH ROW BEGIN
+  IF NEW.temporary_request_id IS NULL OR NEW.temporary_request_id = 0 THEN
+    SET NEW.temporary_request_id = (
+      SELECT IFNULL(MAX(temporary_request_id), 0) + 1 
+      FROM inpatient_details
+    );
+  END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `otp_access`
+--
+
+DROP TABLE IF EXISTS `otp_access`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `otp_access` (
+  `otp_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `role` enum('ADMIN','STAFF','PATIENT') NOT NULL,
+  `otp` varchar(6) NOT NULL,
+  `generated_at` timestamp NOT NULL,
+  PRIMARY KEY (`otp_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `otp_access`
+--
+
+LOCK TABLES `otp_access` WRITE;
+/*!40000 ALTER TABLE `otp_access` DISABLE KEYS */;
+/*!40000 ALTER TABLE `otp_access` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient`
+--
+
+DROP TABLE IF EXISTS `patient`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patient` (
+  `patient_id` int NOT NULL AUTO_INCREMENT,
+  `patient_name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  `gender` enum('Male','Female','Other') DEFAULT NULL,
+  `address` text,
+  `mobile_number` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`patient_id`),
+  UNIQUE KEY `mobile_number` (`mobile_number`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient`
+--
+
+LOCK TABLES `patient` WRITE;
+/*!40000 ALTER TABLE `patient` DISABLE KEYS */;
+INSERT INTO `patient` VALUES (1,'manikandan',20,'Male','kerala','9898989897'),(2,'kaliraj',47,'Male','sivagiri','8888888888'),(3,'kalai',20,'Female','sivagiri','7655677890'),(4,'kaleeswari',44,'Female','srivilliputhur','8798099080'),(5,'manikandan',23,'Male','kerala','9898989898'),(8,'kaliraj',33,'Male','kerala','9898989800'),(10,'kaliraj',33,'Male','kerala','9898989822'),(11,'malai',23,'Male','Srivilliputhur ','8882220009'),(13,'karthick Raja',22,'Male','Devipattanam','6380629435'),(14,'Boopathi',23,'Male','Salem','8760980981'),(15,'panchavarnam',55,'Female','srivilliputhur','9991116663');
+/*!40000 ALTER TABLE `patient` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient_credentials`
+--
+
+DROP TABLE IF EXISTS `patient_credentials`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patient_credentials` (
+  `patient_id` int NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `password_salt` varchar(255) NOT NULL,
+  PRIMARY KEY (`patient_id`),
+  UNIQUE KEY `email` (`email`),
+  CONSTRAINT `patient_credentials_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient_credentials`
+--
+
+LOCK TABLES `patient_credentials` WRITE;
+/*!40000 ALTER TABLE `patient_credentials` DISABLE KEYS */;
+INSERT INTO `patient_credentials` VALUES (1,'karthick182356@gmail.com','ciVjbVYvKN+EG6t7Z43EDoBCKYAicddA15kw9BJvkWk=','77+9S++/vT/vv73vv70vXe+/vWHvv71V77+9M++/vV4='),(2,'mnb@gmail.com','Yxc5QJlE2qTe8mb2Tpn/4DiOCLkZjSYnRaaSks3pa/g=','DO+/vV7vv70lFTcPce+/vSxPcAzcjw=='),(3,'asdf@gmail.com','L2yJ9o55nXgTvQ1xqdNu/BetTx+5gc8WHMTqyAvZORU=','77+9FjcDEEobGAnvv71D77+977+977+9bn0='),(4,'bud2@gmail.com','1uzvIXscGz2j/c9PbK3ZzrSTUYnaSeDgMxx3ZdFU1aM=','77+977+9ae+/ve+/vS5377+977+9Hkp3Mu+/ve+/ve+/vQ=='),(10,'mnh@gmail.com','Lquf63JIhR3Ygte1VAJLUwZBs8aPVKCxpO7CKim5rfQ=','77+9xZdrQQbvv71VPO+/ve+/vRPvv70IW2Q='),(11,'malai@gmail.com','WFuk5VohZ2PDMJtf1dqB6RKN9J4rTd313zD+TUHVqVA=','77+9KSDvv71cJe+/vTPvv73vv73vv73vv73vv71277+9Gw=='),(13,'karthickraja182356@gmail.com','y89yt7M57WIAiRgef0iVy8aHaPBPnkyEMhROl3wvFrA=','77+9Qkfvv70OQu+/ve+/ve+/ve+/vVXvv70NGu+/vQ=='),(14,'boopathimurugesan2050@gmail.com','ibkkBff2kEIDVwno6WhcrSU+PALcDXTwFaIUjOa17WY=','Me+/vQDvv73vv71kOVvvv73vv73vv73vv70B77+977+9'),(15,'pan123@gmail.com','MuoUioMSAFalyKYL1OvsZVfF45iYzGuQq9H/3MfDtaE=','aO+/vR8Z77+977+9XXnFpT5S77+9WGnvv70=');
+/*!40000 ALTER TABLE `patient_credentials` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient_temporary_requests`
+--
+
+DROP TABLE IF EXISTS `patient_temporary_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patient_temporary_requests` (
+  `temporary_request_id` int NOT NULL AUTO_INCREMENT,
+  `ambulance_request_id` int DEFAULT NULL,
+  `request_time` timestamp NULL DEFAULT NULL,
+  `isBedAllocated` tinyint(1) DEFAULT '0',
+  `transferred_to` smallint DEFAULT NULL,
+  `transferred_from` smallint DEFAULT NULL,
+  `admitted_by` int DEFAULT '0',
+  `isProcessed` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`temporary_request_id`),
+  KEY `ambulance_request_id` (`ambulance_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=190 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient_temporary_requests`
+--
+
+LOCK TABLES `patient_temporary_requests` WRITE;
+/*!40000 ALTER TABLE `patient_temporary_requests` DISABLE KEYS */;
+INSERT INTO `patient_temporary_requests` VALUES (1,2,'2025-09-03 12:52:33',1,NULL,NULL,NULL,1),(2,3,'2025-09-03 12:59:45',1,NULL,NULL,NULL,1),(3,4,'2025-09-03 14:42:20',1,NULL,NULL,NULL,1),(4,5,'2025-09-03 13:23:33',1,NULL,NULL,NULL,1),(5,6,'2025-09-03 13:30:15',1,NULL,NULL,NULL,1),(6,7,'2025-09-03 15:24:52',1,NULL,NULL,NULL,1),(7,8,'2025-09-03 15:46:15',1,NULL,NULL,NULL,1),(8,9,'2025-09-03 16:10:20',1,NULL,NULL,NULL,1),(9,10,'2025-09-03 17:08:11',1,NULL,NULL,NULL,1),(10,11,'2025-09-03 16:29:19',1,NULL,NULL,NULL,1),(11,12,'2025-09-03 16:32:16',1,NULL,NULL,NULL,1),(12,13,'2025-09-04 04:39:30',1,NULL,NULL,NULL,1),(13,14,'2025-09-04 04:54:07',1,NULL,NULL,NULL,1),(14,15,'2025-09-04 05:19:54',1,NULL,NULL,NULL,1),(15,16,'2025-09-04 06:01:42',1,NULL,NULL,NULL,1),(16,17,'2025-09-04 06:14:56',1,NULL,NULL,NULL,1),(17,18,'2025-09-04 06:32:24',1,NULL,NULL,NULL,1),(18,19,'2025-09-04 07:30:51',1,5,4,NULL,1),(19,20,'2025-09-04 10:10:58',1,2,6,3,1),(20,21,'2025-09-04 09:31:10',1,NULL,NULL,6,1),(21,22,'2025-09-04 13:31:50',1,NULL,NULL,3,1),(22,23,'2025-09-04 09:32:43',1,NULL,NULL,NULL,1),(23,24,'2025-09-04 14:50:21',1,NULL,NULL,6,1),(24,25,'2025-09-04 13:13:43',1,NULL,NULL,NULL,1),(25,26,'2025-09-04 14:17:26',1,5,2,6,1),(26,27,'2025-09-07 16:01:36',1,5,5,6,1),(27,28,'2025-09-07 15:30:43',1,6,2,NULL,1),(28,29,'2025-09-08 06:40:49',1,NULL,NULL,NULL,1),(29,30,'2025-09-08 06:58:40',1,NULL,NULL,6,1),(30,31,'2025-09-08 07:41:28',1,NULL,NULL,NULL,1),(31,32,'2025-09-08 09:16:23',1,NULL,NULL,NULL,1),(32,33,'2025-09-08 09:37:11',1,NULL,NULL,NULL,1),(33,34,'2025-09-08 09:23:06',1,NULL,NULL,NULL,1),(34,35,'2025-09-08 09:29:41',1,NULL,NULL,NULL,1),(35,36,'2025-09-08 10:05:40',1,NULL,NULL,NULL,1),(36,37,'2025-09-08 09:58:36',1,NULL,NULL,NULL,1),(37,38,'2025-09-08 12:40:41',1,NULL,NULL,17,1),(38,39,'2025-09-09 20:12:53',1,NULL,NULL,4,1),(39,40,'2025-09-09 08:29:49',1,NULL,NULL,4,1),(40,41,'2025-09-09 08:32:10',1,NULL,NULL,4,1),(41,42,'2025-09-09 07:11:33',1,NULL,NULL,6,1),(42,43,'2025-09-09 07:30:14',1,NULL,NULL,6,1),(43,44,'2025-09-09 07:40:32',1,NULL,NULL,6,1),(44,45,'2025-09-09 07:46:07',1,4,5,7,1),(45,46,'2025-09-09 07:51:29',1,NULL,NULL,6,1),(46,47,'2025-09-09 07:55:08',1,NULL,NULL,4,1),(47,48,'2025-09-09 08:17:09',1,NULL,NULL,17,1),(48,49,'2025-09-09 08:24:24',1,NULL,NULL,20,1),(49,50,'2025-09-09 09:22:13',1,NULL,NULL,NULL,1),(68,0,'2025-09-09 12:01:27',1,5,8,6,1),(69,0,'2025-09-09 12:01:27',1,5,8,6,1),(70,0,'2025-09-09 12:01:27',1,8,5,6,1),(71,51,'2025-09-09 13:18:09',1,NULL,NULL,6,1),(72,52,'2025-09-09 13:48:02',1,NULL,NULL,6,1),(73,53,'2025-09-09 15:02:56',1,NULL,NULL,6,1),(74,0,'2025-09-09 15:24:12',1,1,8,6,1),(75,0,'2025-09-09 15:24:12',1,1,8,17,1),(76,0,'2025-09-09 15:24:12',1,1,8,17,1),(77,54,'2025-09-09 18:53:31',1,8,5,17,1),(78,55,'2025-09-09 16:25:21',1,NULL,NULL,4,1),(79,56,'2025-09-09 18:52:02',1,5,8,6,1),(80,57,'2025-09-09 16:39:41',1,NULL,NULL,6,1),(81,58,'2025-09-09 17:08:37',1,NULL,NULL,0,1),(82,59,'2025-09-09 19:08:19',1,NULL,NULL,6,1),(83,60,'2025-09-09 18:47:52',1,NULL,NULL,6,1),(84,61,'2025-09-09 17:05:46',1,NULL,NULL,3,1),(85,62,'2025-09-09 17:50:51',1,NULL,NULL,17,1),(86,63,'2025-09-09 17:37:45',1,NULL,NULL,17,1),(87,64,'2025-09-09 17:38:02',1,NULL,NULL,3,1),(88,65,'2025-09-09 17:23:55',1,8,1,20,1),(89,66,'2025-09-09 17:41:07',1,NULL,NULL,20,1),(90,67,'2025-09-09 18:04:38',1,NULL,NULL,17,1),(91,68,'2025-09-09 18:05:51',1,NULL,NULL,17,1),(92,NULL,'2025-09-09 17:40:56',1,2,8,3,1),(93,NULL,'2025-09-09 17:40:56',1,2,8,3,1),(94,69,'2025-09-09 18:43:15',1,NULL,NULL,17,1),(95,NULL,'2025-09-09 18:05:51',1,2,8,3,1),(96,NULL,'2025-09-09 18:05:51',1,2,8,3,1),(97,NULL,'2025-09-09 18:05:51',1,2,8,3,1),(98,70,'2025-09-10 04:31:20',1,NULL,NULL,17,1),(99,NULL,'2025-09-10 04:05:14',1,2,8,3,1),(100,NULL,'2025-09-10 04:05:14',1,4,2,0,1),(101,NULL,'2025-09-10 04:05:14',1,2,8,0,1),(102,NULL,'2025-09-10 04:05:14',1,2,8,3,1),(103,71,'2025-09-10 04:40:43',1,NULL,NULL,17,1),(104,NULL,'2025-09-10 04:23:33',1,2,8,0,1),(105,NULL,'2025-09-10 04:23:33',1,2,8,0,1),(106,NULL,'2025-09-10 04:23:33',1,2,8,0,1),(107,NULL,'2025-09-10 04:23:33',1,2,8,0,1),(108,NULL,'2025-09-10 04:23:33',1,2,8,3,1),(109,NULL,'2025-09-10 04:58:29',1,2,8,0,1),(110,NULL,'2025-09-10 04:58:29',1,2,8,0,1),(111,NULL,'2025-09-10 04:58:29',1,2,8,0,1),(112,NULL,'2025-09-10 04:58:39',1,4,6,0,1),(113,NULL,'2025-09-10 04:58:39',1,4,6,0,1),(114,NULL,'2025-09-10 04:58:39',1,4,6,0,1),(115,NULL,'2025-09-10 04:58:39',1,4,6,0,1),(116,NULL,'2025-09-10 04:58:39',1,4,6,0,1),(117,72,'2025-09-10 12:24:09',1,NULL,NULL,0,1),(118,73,'2025-09-10 13:20:38',1,NULL,NULL,3,1),(119,74,'2025-09-11 12:44:13',1,NULL,NULL,3,1),(120,NULL,'2025-09-12 06:33:00',1,2,8,3,1),(121,NULL,'2025-09-12 06:33:00',1,2,8,3,1),(122,NULL,'2025-09-12 06:33:01',1,2,8,3,1),(123,NULL,'2025-09-12 06:33:07',1,2,8,3,1),(124,NULL,'2025-09-12 06:33:07',1,2,8,3,1),(125,NULL,'2025-09-12 06:33:07',1,2,8,3,1),(126,75,'2025-09-12 07:09:51',1,NULL,NULL,0,1),(127,76,'2025-09-12 07:11:01',1,NULL,NULL,0,1),(128,77,'2025-09-12 08:23:55',1,NULL,NULL,0,1),(129,78,'2025-09-12 12:01:05',1,NULL,NULL,0,1),(130,79,'2025-09-12 16:38:21',1,NULL,NULL,0,1),(131,80,'2025-09-12 07:28:21',1,NULL,NULL,0,1),(132,NULL,'2025-09-12 09:43:39',1,2,8,0,1),(133,NULL,'2025-09-12 09:43:39',1,2,8,0,1),(134,NULL,'2025-09-12 09:43:39',1,2,8,3,1),(135,NULL,'2025-09-12 09:44:06',1,2,8,0,1),(136,NULL,'2025-09-12 09:44:06',1,2,8,0,1),(137,NULL,'2025-09-12 09:44:06',1,2,8,0,1),(138,81,'2025-09-12 16:31:06',1,NULL,NULL,0,1),(139,82,'2025-09-13 07:04:05',1,NULL,NULL,3,1),(140,83,'2025-09-13 06:25:29',1,NULL,NULL,0,1),(141,84,'2025-09-13 07:32:46',1,NULL,NULL,6,1),(142,85,'2025-09-13 07:37:01',1,NULL,NULL,4,1),(143,86,'2025-09-13 08:53:30',1,NULL,NULL,0,1),(144,87,'2025-09-13 08:52:52',1,5,1,0,1),(145,88,'2025-09-13 10:49:31',1,6,5,4,1),(146,89,'2025-09-13 10:03:44',1,4,6,0,1),(147,90,'2025-09-13 10:00:34',1,NULL,NULL,0,1),(148,91,'2025-09-13 11:02:43',1,NULL,NULL,6,1),(149,92,'2025-09-13 10:40:32',1,4,1,0,1),(150,93,'2025-09-13 10:33:21',1,NULL,NULL,0,1),(151,94,'2025-09-13 11:09:15',1,NULL,NULL,30,1),(152,95,'2025-09-13 11:24:00',1,NULL,NULL,30,1),(153,96,'2025-09-13 11:42:38',1,NULL,NULL,6,1),(154,97,'2025-09-15 06:33:36',1,NULL,NULL,6,1),(155,98,'2025-09-15 06:54:15',1,NULL,NULL,6,1),(156,99,'2025-09-15 06:52:41',1,NULL,NULL,6,1),(157,100,'2025-09-15 06:59:11',1,NULL,NULL,6,1),(158,101,'2025-09-15 06:56:57',1,NULL,NULL,4,1),(159,102,'2025-09-15 07:29:28',1,5,1,32,1),(160,103,'2025-09-15 07:35:34',1,NULL,NULL,6,1),(161,104,'2025-09-15 07:59:16',1,NULL,NULL,6,1),(162,105,'2025-09-15 08:19:02',1,NULL,NULL,32,1),(163,NULL,'2025-09-15 09:28:25',1,17,8,0,1),(164,NULL,'2025-09-15 12:32:17',1,17,8,0,1),(165,NULL,'2025-09-15 12:34:18',1,17,8,0,1),(166,NULL,'2025-09-15 12:35:08',1,17,8,0,1),(167,NULL,'2025-09-15 12:35:32',1,17,8,0,1),(168,106,'2025-09-15 13:35:40',1,NULL,NULL,32,1),(169,107,'2025-09-15 13:59:31',1,NULL,NULL,6,1),(170,108,'2025-09-15 16:23:11',1,NULL,NULL,6,1),(171,109,'2025-09-16 04:29:49',1,NULL,NULL,0,1),(172,110,'2025-09-16 04:59:59',1,NULL,NULL,4,1),(173,111,'2025-09-16 05:32:30',1,NULL,NULL,4,1),(174,112,'2025-09-16 09:19:26',1,NULL,NULL,0,1),(175,NULL,'2025-09-16 09:41:08',1,17,8,0,1),(176,NULL,'2025-09-16 09:41:18',1,17,8,0,1),(177,113,'2025-09-17 06:57:07',1,NULL,NULL,6,1),(178,114,'2025-09-17 06:59:25',1,NULL,NULL,6,1),(179,115,'2025-09-17 07:18:28',1,NULL,NULL,6,1),(180,116,'2025-09-17 07:19:22',1,NULL,NULL,6,1),(181,117,'2025-09-17 07:37:16',1,NULL,NULL,32,1),(182,118,'2025-09-17 07:38:01',1,NULL,NULL,32,1),(183,119,'2025-09-17 07:28:59',1,NULL,NULL,6,1),(184,120,'2025-09-17 07:30:05',1,NULL,NULL,6,1),(185,121,'2025-09-17 07:41:41',1,NULL,NULL,6,1),(186,122,'2025-09-17 07:40:37',1,NULL,NULL,6,1),(187,123,'2025-09-17 10:14:48',1,NULL,NULL,6,1),(188,124,'2025-09-17 10:38:45',1,NULL,NULL,6,1),(189,125,'2025-09-17 10:38:36',1,NULL,NULL,0,1);
+/*!40000 ALTER TABLE `patient_temporary_requests` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient_transfer_log`
+--
+
+DROP TABLE IF EXISTS `patient_transfer_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patient_transfer_log` (
+  `log_id` int NOT NULL AUTO_INCREMENT,
+  `source_hospital_id` smallint NOT NULL,
+  `target_hospital_id` smallint NOT NULL,
+  `patient_id` int NOT NULL,
+  `transfer_date` timestamp NOT NULL,
+  PRIMARY KEY (`log_id`),
+  KEY `source_hospital_id` (`source_hospital_id`),
+  KEY `target_hospital_id` (`target_hospital_id`),
+  CONSTRAINT `patient_transfer_log_ibfk_1` FOREIGN KEY (`source_hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE,
+  CONSTRAINT `patient_transfer_log_ibfk_2` FOREIGN KEY (`target_hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient_transfer_log`
+--
+
+LOCK TABLES `patient_transfer_log` WRITE;
+/*!40000 ALTER TABLE `patient_transfer_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `patient_transfer_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient_transfer_mapping`
+--
+
+DROP TABLE IF EXISTS `patient_transfer_mapping`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patient_transfer_mapping` (
+  `mapping_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `transfer_request_id` int NOT NULL,
+  `patient_name` varchar(255) DEFAULT NULL,
+  `patient_aadhar` varchar(20) DEFAULT NULL,
+  `patient_condition` varchar(50) DEFAULT NULL,
+  `mapping_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`mapping_id`),
+  KEY `transfer_request_id` (`transfer_request_id`),
+  CONSTRAINT `patient_transfer_mapping_ibfk_1` FOREIGN KEY (`transfer_request_id`) REFERENCES `patient_temporary_requests` (`temporary_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient_transfer_mapping`
+--
+
+LOCK TABLES `patient_transfer_mapping` WRITE;
+/*!40000 ALTER TABLE `patient_transfer_mapping` DISABLE KEYS */;
+INSERT INTO `patient_transfer_mapping` VALUES (1,38,92,NULL,NULL,'','2025-09-09 17:40:55'),(2,39,93,NULL,NULL,'','2025-09-09 17:40:55'),(3,38,95,NULL,NULL,'','2025-09-09 18:05:51'),(4,39,96,NULL,NULL,'','2025-09-09 18:05:51'),(5,42,97,'Indian',NULL,'','2025-09-09 18:05:51'),(6,38,99,NULL,NULL,'','2025-09-10 04:05:13'),(7,39,100,NULL,NULL,'','2025-09-10 04:05:14'),(8,42,101,'Indian',NULL,'','2025-09-10 04:05:14'),(9,46,102,'mmm',NULL,'','2025-09-10 04:05:14'),(10,38,104,NULL,NULL,'','2025-09-10 04:23:33'),(11,39,105,NULL,NULL,'','2025-09-10 04:23:33'),(12,42,106,'Indian',NULL,'','2025-09-10 04:23:33'),(13,46,107,'mmm',NULL,'','2025-09-10 04:23:33'),(14,48,108,'nbnb',NULL,'','2025-09-10 04:23:33'),(15,39,109,NULL,NULL,'','2025-09-10 04:58:29'),(16,42,110,'Indian',NULL,'','2025-09-10 04:58:29'),(17,46,111,'mmm',NULL,'','2025-09-10 04:58:29'),(18,1,112,'Manikandan','343456789098','CRITICAL','2025-09-10 04:58:39'),(19,23,113,NULL,NULL,'CRITICAL','2025-09-10 04:58:39'),(20,24,114,NULL,NULL,'NORMAL','2025-09-10 04:58:39'),(21,25,115,NULL,NULL,'NORMAL','2025-09-10 04:58:39'),(22,26,116,NULL,NULL,'NORMAL','2025-09-10 04:58:39'),(23,39,120,NULL,NULL,'','2025-09-12 06:33:00'),(24,42,121,'Indian',NULL,'','2025-09-12 06:33:00'),(26,39,123,NULL,NULL,'','2025-09-12 06:33:07'),(27,42,124,'Indian',NULL,'','2025-09-12 06:33:07'),(29,39,132,NULL,NULL,'','2025-09-12 09:43:38'),(30,42,133,'Indian',NULL,'','2025-09-12 09:43:38'),(32,39,135,NULL,NULL,'','2025-09-12 09:44:06'),(33,42,136,'Indian',NULL,'','2025-09-12 09:44:06');
+/*!40000 ALTER TABLE `patient_transfer_mapping` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `scan_bookings`
+--
+
+DROP TABLE IF EXISTS `scan_bookings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `scan_bookings` (
+  `scan_booking_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `hospital_id` smallint NOT NULL,
+  `booked_date` timestamp NOT NULL,
+  `scan_type` tinyint NOT NULL,
+  `isCancelled` tinyint(1) NOT NULL DEFAULT '0',
+  `version` int DEFAULT '1',
+  PRIMARY KEY (`scan_booking_id`),
+  KEY `fk_patient` (`patient_id`),
+  KEY `fk_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `scan_bookings`
+--
+
+LOCK TABLES `scan_bookings` WRITE;
+/*!40000 ALTER TABLE `scan_bookings` DISABLE KEYS */;
+INSERT INTO `scan_bookings` VALUES (3,1,1,'2025-09-06 18:30:00',1,1,1),(4,1,2,'2025-09-06 18:30:00',3,0,1),(5,1,4,'2025-09-08 18:30:00',2,1,1),(6,1,1,'2025-09-17 18:30:00',1,1,1),(7,1,4,'2025-09-09 18:30:00',2,1,1),(8,1,4,'2025-09-09 18:30:00',2,0,1),(9,1,2,'2025-09-10 18:30:00',3,0,1),(10,1,1,'2026-12-30 18:30:00',3,1,1),(11,1,1,'2025-09-10 18:30:00',3,1,1),(12,1,1,'2025-09-09 18:30:00',1,0,1),(13,1,2,'2025-09-11 18:30:00',3,0,1),(14,1,1,'2025-09-11 18:30:00',3,1,1),(15,2,1,'2025-09-11 18:30:00',1,0,1),(16,2,1,'2025-09-12 18:30:00',1,0,1),(17,2,2,'2025-09-12 18:30:00',3,1,1),(18,2,1,'2025-09-19 18:30:00',3,1,1),(19,2,1,'2025-09-18 18:30:00',1,0,1),(20,1,12,'2025-09-12 18:30:00',2,1,1),(21,1,12,'2025-09-11 18:30:00',2,1,1),(22,1,1,'2025-10-15 18:30:00',3,1,1),(23,2,1,'2025-09-14 18:30:00',1,0,1),(24,1,1,'2025-09-14 18:30:00',1,1,1),(25,2,1,'2025-09-17 18:30:00',1,0,1),(26,1,1,'2025-09-19 18:30:00',3,1,1),(27,1,1,'2025-09-15 18:30:00',3,1,1),(28,1,1,'2025-09-23 18:30:00',1,1,1),(29,1,2,'2025-09-17 18:30:00',3,1,3),(30,1,1,'2025-10-11 18:30:00',1,0,1),(31,11,1,'2025-09-28 18:30:00',1,0,1),(32,11,1,'2025-10-13 18:30:00',1,0,1),(33,1,5,'2025-09-14 18:30:00',1,1,1),(34,13,5,'2025-12-20 18:30:00',1,1,1),(35,13,5,'2025-09-11 18:30:00',1,0,1),(36,13,5,'2025-09-25 18:30:00',1,1,2),(37,13,5,'2025-09-17 18:30:00',1,1,2),(38,14,5,'2025-09-16 18:30:00',1,1,4),(39,1,5,'2025-10-21 18:30:00',1,1,1),(40,14,5,'2025-10-20 18:30:00',1,0,1),(41,14,19,'2025-09-16 18:30:00',2,1,1),(42,14,19,'2025-09-15 18:30:00',2,1,1),(43,14,19,'2025-09-17 18:30:00',2,1,1),(44,14,19,'2025-09-26 18:30:00',2,1,1),(45,14,19,'2025-09-29 18:30:00',2,1,1),(46,13,19,'2025-09-24 18:30:00',2,0,1),(47,1,5,'2025-09-16 18:30:00',1,0,1),(48,1,1,'2025-10-22 18:30:00',3,1,1),(49,1,4,'2025-09-17 18:30:00',1,0,1),(50,1,4,'2025-09-18 18:30:00',1,0,1),(51,1,1,'2025-09-26 18:30:00',3,0,1),(52,14,1,'2025-11-27 18:30:00',3,0,1),(53,2,1,'2025-09-26 18:30:00',2,0,1),(54,4,19,'2025-09-25 18:30:00',2,0,1),(55,3,19,'2025-09-23 18:30:00',2,0,1),(56,2,19,'2025-09-29 18:30:00',3,0,1);
+/*!40000 ALTER TABLE `scan_bookings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `scan_centres`
+--
+
+DROP TABLE IF EXISTS `scan_centres`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `scan_centres` (
+  `scan_center_id` smallint NOT NULL AUTO_INCREMENT,
+  `scan_type_id` tinyint NOT NULL,
+  `hospital_id` smallint NOT NULL,
+  `total_booking_per_day` int DEFAULT '15',
+  `is_available` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`scan_center_id`),
+  KEY `scan_type_id` (`scan_type_id`),
+  KEY `hospital_id` (`hospital_id`),
+  CONSTRAINT `scan_centres_ibfk_1` FOREIGN KEY (`scan_type_id`) REFERENCES `scan_type` (`scan_type_id`) ON DELETE CASCADE,
+  CONSTRAINT `scan_centres_ibfk_2` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `scan_centres`
+--
+
+LOCK TABLES `scan_centres` WRITE;
+/*!40000 ALTER TABLE `scan_centres` DISABLE KEYS */;
+INSERT INTO `scan_centres` VALUES (1,1,1,1,1),(2,2,1,10,1),(3,3,1,10,0),(4,3,2,12,1),(6,2,4,0,1),(8,2,12,15,1),(10,1,2,10,1),(11,3,1,15,0),(12,3,1,15,1),(17,1,4,15,1),(18,1,15,15,0),(19,1,5,1,0),(20,2,5,15,0),(21,1,5,15,0),(22,1,5,15,0),(23,3,5,15,0),(24,3,5,15,0),(25,3,5,15,0),(26,3,5,15,0),(27,3,5,15,0),(28,3,5,15,0),(29,3,5,15,0),(30,1,5,15,1),(31,2,19,15,1),(32,1,19,15,1),(33,3,19,15,1);
+/*!40000 ALTER TABLE `scan_centres` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `scan_type`
+--
+
+DROP TABLE IF EXISTS `scan_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `scan_type` (
+  `scan_type_id` tinyint NOT NULL AUTO_INCREMENT,
+  `scan_type_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`scan_type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `scan_type`
+--
+
+LOCK TABLES `scan_type` WRITE;
+/*!40000 ALTER TABLE `scan_type` DISABLE KEYS */;
+INSERT INTO `scan_type` VALUES (1,'MRI'),(2,'CT'),(3,'X-Ray');
+/*!40000 ALTER TABLE `scan_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `staff`
+--
+
+DROP TABLE IF EXISTS `staff`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `staff` (
+  `staff_id` int NOT NULL AUTO_INCREMENT,
+  `hospital_id` smallint NOT NULL,
+  `staff_name` varchar(255) NOT NULL,
+  `age` int DEFAULT NULL,
+  `gender` enum('Male','Female','Other') DEFAULT NULL,
+  `is_on_duty` tinyint(1) DEFAULT '0',
+  `mobile_number` varchar(10) DEFAULT NULL,
+  `address` varchar(500) NOT NULL,
+  `is_superior_staff` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`staff_id`),
+  UNIQUE KEY `mobile_number` (`mobile_number`),
+  KEY `hospital_id` (`hospital_id`),
+  CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospital` (`hospital_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `staff`
+--
+
+LOCK TABLES `staff` WRITE;
+/*!40000 ALTER TABLE `staff` DISABLE KEYS */;
+INSERT INTO `staff` VALUES (3,2,'manikandan',20,'Male',1,'9898989893','kerala',0),(4,6,'Siva',23,'Male',1,'8787676756','srivilliputhur',1),(5,1,'Ganesh',41,'Male',1,'8765431209','srivilliputhur',0),(6,5,'kaliraj',47,'Male',1,'9090880909','sivagiri',0),(7,4,'kaleeswari',44,'Female',1,'7667766776','srivilliputhur',0),(17,8,'kumar',40,'Male',1,'9898989892','srivilliputhur',0),(20,8,'chitra',39,'Female',1,'8909897654','srivilliputhur',0),(23,1,'manikanda moorthy',21,'Male',1,'9898989890','kerala',0),(25,1,'manikandan',22,'Male',1,'9898989898','Rajapalayam',0),(29,1,'manikandan',22,'Male',1,'8909897651','Rajapalayam',0),(30,15,'raja',25,'Male',1,'9110011102','sivakasi',0),(31,6,'Muthu',26,'Male',1,'8907668881','Nagerkovil',0),(32,5,'veeraputhiran',45,'Male',1,'8882229990','srivilliputhur',0);
+/*!40000 ALTER TABLE `staff` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `staff_credentials`
+--
+
+DROP TABLE IF EXISTS `staff_credentials`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `staff_credentials` (
+  `staff_id` int NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `password_salt` varchar(255) NOT NULL,
+  PRIMARY KEY (`staff_id`),
+  UNIQUE KEY `email` (`email`),
+  CONSTRAINT `staff_credentials_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `staff_credentials`
+--
+
+LOCK TABLES `staff_credentials` WRITE;
+/*!40000 ALTER TABLE `staff_credentials` DISABLE KEYS */;
+INSERT INTO `staff_credentials` VALUES (3,'karthick182356@gmail.com','14Qoem1yZGI3eTuqvDCp2kXoJgVecFYP/cH29DYADCg=','77+977+9cMq677+9DEHvv71DUu+/vQI977+9RQ=='),(4,'bud@gmail.com','uajkS7n+FTg9lvDVAUr6B1kO8O4m/OSH2kegAZCCrEM=','77+9Gu+/ve+/ve+/vTnvv70jU++/ve+/vSt0GDXvv70='),(5,'msdf@gmail.com','p568D9m20z+E7XkiBs4pcyBABZvxCicbM1jxjbj9sAI=','dFLvv73vv71d77+9Cu+/ve+/ve+/vVI9eO+/vWUq'),(6,'mnb@gmail.com','5TjgAG7Cev/4ColwUaqIby/jIZSMqmo/Kn6UwtsQei0=','77+977+977+9HiIx77+977+977+9UO+/ve+/ve+/ve+/vXkO'),(7,'bud2@gmail.com','Lsqqrrk4biV6Y6ONJtV5yJ3hnNbjPcKGvqxIE2nffpg=','Lu+/vSvvv73vv716Wjnvv73vv70xFRDvv73vv70P'),(17,'bud3@gmail.com','VvYrRuC2se5UN9MwKIHPNevBZEXsHXAKR6c/aEYGoyc=','77+977+977+977+977+9Ie+/vUbvv73vv70GEUzvv705Ng=='),(20,'bud4@gmail.com','LvE3rWlHhDHgewz6y93mWy9/5z5wq5BZqthWDYvw270=','LO+/ve+/ve+/ve+/ve+/vUjvv73vv73GkiDvv71IW1A='),(29,'mnb2@gmail.com','eX5sTf6uxkHE9i1EBi9Ze4hSdjGbxljk8nAMGNg7HXM=','77+9FGpD2ZcL77+977+9FWnvv73vv73vv73vv71O'),(30,'raja@gmail.com','yNIso2e7w2Knf/WV4vd3CGaoFjQJ2HFzmDpw5zANn4c=','77+977+977+977+977+977+977+9VFfvv70777+977+977+9RlI='),(31,'muthu@gmail.com','I20RkDLue2sC//hZ3/yBkJ97gCEH/cAAi7D48DpXuxQ=','be+/vVQ1aHPvv70Q77+977+9agnvv70677+9'),(32,'veer@gmail.com','Q6RTYXxLlEWW3ikg3SNgjYqIe6H83nn/N9rbLj2ntkg=','ARAb77+9ce+/vTFMf1Dvv73vv71C77+977+9VA==');
+/*!40000 ALTER TABLE `staff_credentials` ENABLE KEYS */;
+UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-09-19 13:20:53
